@@ -1,0 +1,4 @@
+name: DAC
+version: '${version}'
+main: fr.ethilvan.dac.DAC
+api-version: '1.20'
