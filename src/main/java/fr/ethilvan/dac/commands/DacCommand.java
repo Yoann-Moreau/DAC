@@ -1,6 +1,7 @@
 package fr.ethilvan.dac.commands;
 
 import fr.ethilvan.dac.DAC;
+import fr.ethilvan.dac.commands.subcommands.DefineCommand;
 import fr.ethilvan.dac.commands.subcommands.InitCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -21,6 +22,7 @@ public class DacCommand implements TabExecutor {
 		this.dac = dac;
 
 		subcommands.add(new InitCommand());
+		subcommands.add(new DefineCommand());
 	}
 
 
