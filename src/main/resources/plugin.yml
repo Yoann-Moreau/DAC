@@ -3,3 +3,7 @@ version: '${version}'
 main: fr.ethilvan.dac.DAC
 api-version: '1.20'
 depend: [WorldEdit]
+commands:
+  dac:
+    description: ...
+    usage: /<command>
