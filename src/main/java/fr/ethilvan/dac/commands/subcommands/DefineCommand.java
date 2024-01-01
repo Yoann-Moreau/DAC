@@ -44,7 +44,7 @@ public class DefineCommand extends Subcommand {
 			return;
 		}
 
-		if (RegionManagement.saveRegion(dac, args[1], region)) {
+		if (RegionManagement.saveRegionToConfig(dac, args[1], region)) {
 			player.sendMessage(Component.text("DAC region saved.", NamedTextColor.GREEN));
 		}
 		else {
