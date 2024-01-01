@@ -7,16 +7,16 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import fr.ethilvan.dac.DAC;
-import org.bukkit.configuration.ConfigurationSection;
+import fr.ethilvan.dac.worldedit.Selection;
 import org.bukkit.configuration.MemorySection;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class RegionManagement {
@@ -42,29 +42,27 @@ public class RegionManagement {
 
 	public static boolean saveRegionToConfig(DAC dac, String regionName, Region region) {
 
-		HashMap<String, HashMap<String, Object>> regionsMap = new HashMap<>();
+		HashMap<String, Object> regions = new HashMap<>();
 
-		loadRegionsFromConfig(dac, regionsMap);
+		loadRegionsFromConfig(dac, regions);
 
 		// Check if region already exists
-		if (regionsMap.containsKey(regionName)) {
+		if (regions.containsKey(regionName)) {
 			return false;
 		}
 
-		if (region instanceof CuboidRegion cuboidRegion) {
-			addCuboidRegionToHashMap(dac, regionName, cuboidRegion, regionsMap);
-		} else if (region instanceof Polygonal2DRegion polygonal2DRegion) {
-			//
-		}
+		Selection selection = new Selection(region);
+		Map<String, Object> map = selection.serialize();
+		regions.put(regionName, map);
 
-		dac.getConfig().set("regions", regionsMap);
+		dac.getConfig().set("regions", regions);
 		dac.saveConfig();
 
 		return true;
 	}
 
 
-	public static void loadRegionsFromConfig(DAC dac, HashMap<String, HashMap<String, Object>> regionsMap) {
+	public static void loadRegionsFromConfig(DAC dac, HashMap<String, Object> regionsMap) {
 
 		Object regions = dac.getConfig().get("regions");
 		if (regions == null) {
@@ -73,10 +71,7 @@ public class RegionManagement {
 
 		if (regions instanceof MemorySection memorySection) {
 
-			for (String key : memorySection.getKeys(true)) {
-				if (key.contains(".")) { // skip sub keys
-					continue;
-				}
+			for (String key : memorySection.getKeys(false)) {
 				if (Objects.equals(memorySection.get(key + ".type"), "cuboid")) {
 					BlockVector3 blockVector3 = BlockVector3.ZERO;
 					BlockVector3 pos1 = blockVector3.add(
@@ -94,6 +89,19 @@ public class RegionManagement {
 				}
 			}
 		}
+		else {
+			if (regions instanceof HashMap<?,?> regionsHashMap) {
+				for (Object key : regionsHashMap.keySet()) {
+					Object regionMap = regionsHashMap.get(key);
+					if (regionMap instanceof HashMap<?,?> hashMap) {
+						Region region = Selection.deserialize(hashMap).getRegion();
+						if (region instanceof CuboidRegion cuboidRegion) {
+							addCuboidRegionToHashMap(dac, (String) key, cuboidRegion, regionsMap);
+						}
+					}
+				}
+			}
+		}
 	}
 
 
@@ -101,22 +109,12 @@ public class RegionManagement {
 			DAC dac,
 			String regionName,
 			CuboidRegion cuboidRegion,
-			HashMap<String, HashMap<String, Object>> regionsMap
+			HashMap<String, Object> regionsMap
 	) {
 
 		dac.regions.put(regionName, cuboidRegion);
-		HashMap<String, Object> regionMap = new HashMap<>();
-		regionMap.put("type", "cuboid");
-		HashMap<String, Object> pos1Map = new HashMap<>();
-		pos1Map.put("x", cuboidRegion.getPos1().getX());
-		pos1Map.put("y", cuboidRegion.getPos1().getY());
-		pos1Map.put("z", cuboidRegion.getPos1().getZ());
-		regionMap.put("pos1", pos1Map);
-		HashMap<String, Object> pos2Map = new HashMap<>();
-		pos2Map.put("x", cuboidRegion.getPos2().getX());
-		pos2Map.put("y", cuboidRegion.getPos2().getY());
-		pos2Map.put("z", cuboidRegion.getPos2().getZ());
-		regionMap.put("pos2", pos2Map);
+		Selection selection = new Selection(cuboidRegion);
+		Map<String, Object> regionMap = selection.serialize();
 		regionsMap.put(regionName, regionMap);
 	}
 
