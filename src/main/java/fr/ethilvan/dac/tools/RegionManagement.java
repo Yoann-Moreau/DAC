@@ -44,9 +44,7 @@ public class RegionManagement {
 
 		HashMap<String, HashMap<String, Object>> regionsMap = new HashMap<>();
 
-		dac.getLogger().info(regionsMap.toString());
 		loadRegionsFromConfig(dac, regionsMap);
-		dac.getLogger().info(regionsMap.toString());
 
 		// Check if region already exists
 		if (regionsMap.containsKey(regionName)) {
@@ -55,12 +53,9 @@ public class RegionManagement {
 
 		if (region instanceof CuboidRegion cuboidRegion) {
 			addCuboidRegionToHashMap(dac, regionName, cuboidRegion, regionsMap);
-		}
-		else if (region instanceof Polygonal2DRegion polygonal2DRegion) {
+		} else if (region instanceof Polygonal2DRegion polygonal2DRegion) {
 			//
 		}
-
-		dac.getLogger().info(regionsMap.toString());
 
 		dac.getConfig().set("regions", regionsMap);
 		dac.saveConfig();
@@ -71,33 +66,34 @@ public class RegionManagement {
 
 	public static void loadRegionsFromConfig(DAC dac, HashMap<String, HashMap<String, Object>> regionsMap) {
 
-		ConfigurationSection regions = dac.getConfig().getConfigurationSection("regions");
+		Object regions = dac.getConfig().get("regions");
 		if (regions == null) {
-			dac.getLogger().warning("null");
 			return;
 		}
-		for (String key : regions.getKeys(true)) {
-			if (key.contains(".")) { // skip sub keys
-				continue;
-			}
-			if (Objects.equals(regions.get(key + ".type"), "cuboid")) {
-				BlockVector3 blockVector3 = BlockVector3.ZERO;
-				BlockVector3 pos1 = blockVector3.add(
-						regions.getInt(key + "pos1.x"),
-						regions.getInt(key + "pos1.y"),
-						regions.getInt(key + "pos1.z")
-				);
-				BlockVector3 pos2 = blockVector3.add(
-						regions.getInt(key + "pos2.x"),
-						regions.getInt(key + "pos2.y"),
-						regions.getInt(key + "pos2.z")
-				);
-				CuboidRegion cuboidRegion = new CuboidRegion(pos1, pos2);
-				addCuboidRegionToHashMap(dac, key, cuboidRegion, regionsMap);
+
+		if (regions instanceof MemorySection memorySection) {
+
+			for (String key : memorySection.getKeys(true)) {
+				if (key.contains(".")) { // skip sub keys
+					continue;
+				}
+				if (Objects.equals(memorySection.get(key + ".type"), "cuboid")) {
+					BlockVector3 blockVector3 = BlockVector3.ZERO;
+					BlockVector3 pos1 = blockVector3.add(
+							memorySection.getInt(key + "pos1.x"),
+							memorySection.getInt(key + "pos1.y"),
+							memorySection.getInt(key + "pos1.z")
+					);
+					BlockVector3 pos2 = blockVector3.add(
+							memorySection.getInt(key + "pos2.x"),
+							memorySection.getInt(key + "pos2.y"),
+							memorySection.getInt(key + "pos2.z")
+					);
+					CuboidRegion cuboidRegion = new CuboidRegion(pos1, pos2);
+					addCuboidRegionToHashMap(dac, key, cuboidRegion, regionsMap);
+				}
 			}
 		}
-
-		dac.getLogger().info("load: " + regionsMap.toString());
 	}
 
 
