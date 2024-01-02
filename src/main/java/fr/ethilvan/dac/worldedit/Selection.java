@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Selection implements ConfigurationSerializable {
@@ -66,19 +67,36 @@ public class Selection implements ConfigurationSerializable {
 	public static Selection deserialize(Map<?, ?> map) {
 		BlockVector3 blockVector3 = BlockVector3.ZERO;
 		if (map.get("type").equals("cuboid")) {
-			HashMap<?,?> pos1Map = (HashMap<?, ?>) map.get("pos1");
+			HashMap<?, ?> pos1Map = (HashMap<?, ?>) map.get("pos1");
 			BlockVector3 pos1 = blockVector3.add(
 					(int) pos1Map.get("x"),
 					(int) pos1Map.get("y"),
 					(int) pos1Map.get("z")
 			);
-			HashMap<?,?> pos2Map = (HashMap<?, ?>) map.get("pos2");
+			HashMap<?, ?> pos2Map = (HashMap<?, ?>) map.get("pos2");
 			BlockVector3 pos2 = blockVector3.add(
 					(int) pos2Map.get("x"),
 					(int) pos2Map.get("y"),
 					(int) pos2Map.get("z")
 			);
 			return new Selection(new CuboidRegion(pos1, pos2));
+		}
+		else if (map.get("type").equals("poly2d")) {
+			Polygonal2DRegion polygonal2DRegion = new Polygonal2DRegion();
+			int minY = (int) map.get("minY");
+			int maxY = (int) map.get("maxY");
+			polygonal2DRegion.setMinimumY(minY);
+			polygonal2DRegion.setMaximumY(maxY);
+			List<Map<?, ?>> points = (List<Map<?, ?>>) map.get("points");
+			BlockVector2 blockVector2 = BlockVector2.ZERO;
+			for (Map<?, ?> point : points) {
+				BlockVector2 pos = blockVector2.add(
+						(int) point.get("x"),
+						(int) point.get("z")
+				);
+				polygonal2DRegion.addPoint(pos);
+			}
+			return new Selection(polygonal2DRegion);
 		}
 
 		return new Selection(new CuboidRegion(blockVector3, blockVector3));

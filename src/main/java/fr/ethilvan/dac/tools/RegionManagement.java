@@ -5,6 +5,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
@@ -15,6 +16,7 @@ import com.sk89q.worldedit.world.World;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.worldedit.Selection;
 import org.bukkit.configuration.MemorySection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -91,9 +93,18 @@ public class RegionManagement {
 				}
 				else if (Objects.equals(memorySection.get(key + ".type"), "poly2d")) {
 					Polygonal2DRegion polygonal2DRegion = new Polygonal2DRegion();
-					polygonal2DRegion.setMinimumY(memorySection.getInt("minY"));
-					polygonal2DRegion.setMaximumY(memorySection.getInt("maxY"));
-					List<Map<?, ?>> points = memorySection.getMapList("points");
+					polygonal2DRegion.setMinimumY(memorySection.getInt(key + ".minY"));
+					polygonal2DRegion.setMaximumY(memorySection.getInt(key + ".maxY"));
+					@NotNull List<Map<?, ?>> points = memorySection.getMapList(key + ".points");
+					for (Map<?, ?> point : points) {
+						BlockVector2 blockVector2 = BlockVector2.ZERO;
+						BlockVector2 pos = blockVector2.add(
+								Integer.parseInt(point.get("x").toString()),
+								Integer.parseInt(point.get("z").toString())
+						);
+						polygonal2DRegion.addPoint(pos);
+					}
+					addPoly2dRegionToHashMap(dac, key, polygonal2DRegion, regionsMap);
 				}
 			}
 		}
@@ -105,6 +116,9 @@ public class RegionManagement {
 						Region region = Selection.deserialize(hashMap).getRegion();
 						if (region instanceof CuboidRegion cuboidRegion) {
 							addCuboidRegionToHashMap(dac, (String) key, cuboidRegion, regionsMap);
+						}
+						else if (region instanceof Polygonal2DRegion polygonal2DRegion) {
+							addPoly2dRegionToHashMap(dac, (String) key, polygonal2DRegion, regionsMap);
 						}
 					}
 				}
@@ -122,6 +136,20 @@ public class RegionManagement {
 
 		dac.regions.put(regionName, cuboidRegion);
 		Selection selection = new Selection(cuboidRegion);
+		Map<String, Object> regionMap = selection.serialize();
+		regionsMap.put(regionName, regionMap);
+	}
+
+
+	private static void addPoly2dRegionToHashMap(
+			DAC dac,
+			String regionName,
+			Polygonal2DRegion polygonal2DRegion,
+			HashMap<String, Object> regionsMap
+	) {
+
+		dac.regions.put(regionName, polygonal2DRegion);
+		Selection selection = new Selection(polygonal2DRegion);
 		Map<String, Object> regionMap = selection.serialize();
 		regionsMap.put(regionName, regionMap);
 	}
