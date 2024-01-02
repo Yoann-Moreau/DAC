@@ -9,20 +9,20 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-public class DefineCommand extends Subcommand {
+public class PoolCommand extends Subcommand {
 	@Override
 	public String getName() {
-		return "define";
+		return "pool";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Defines a region in which players can perform 'dac init' to create the DAC game.";
+		return "Defines the pool area";
 	}
 
 	@Override
 	public String getSyntax() {
-		return "/dac define <regionName>";
+		return "/dac pool <dacName>";
 	}
 
 	@Override
@@ -35,7 +35,13 @@ public class DefineCommand extends Subcommand {
 		}
 
 		if (args.length < 2) {
-			player.sendMessage(Component.text("You must provide a name for the DAC region.", NamedTextColor.RED));
+			player.sendMessage(Component.text("You must provide the name of the DAC region.", NamedTextColor.RED));
+			return;
+		}
+
+		String regionName = args[1];
+		if (RegionManagement.getExistingRegion(player, "dac_" + regionName) == null) {
+			player.sendMessage(Component.text("You must first use 'dac define'", NamedTextColor.RED));
 			return;
 		}
 
@@ -44,6 +50,6 @@ public class DefineCommand extends Subcommand {
 			return;
 		}
 
-		RegionManagement.saveRegionToConfig(player, "dac_" + args[1], region, true);
+		RegionManagement.saveRegionToConfig(player, "dac_pool_" + args[1], region);
 	}
 }

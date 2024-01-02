@@ -19,6 +19,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.util.WorldEditRegionConverter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -43,6 +44,19 @@ public class RegionManagement {
 	}
 
 
+	public static Region getExistingRegion(org.bukkit.entity.Player player, String regionName) {
+
+		RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+		RegionManager regionsManager = container.get(BukkitAdapter.adapt(player.getWorld()));
+
+		if (regionsManager == null) {
+			player.sendMessage(Component.text("Error when retrieving world regions.", NamedTextColor.RED));
+			return null;
+		}
+		ProtectedRegion protectedRegion = regionsManager.getRegion(regionName);
+		return WorldEditRegionConverter.convertToRegion(protectedRegion);
+	}
+
 
 	public static void saveRegionToConfig(
 			org.bukkit.entity.Player player,
@@ -61,7 +75,6 @@ public class RegionManagement {
 	) {
 
 		RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-
 		RegionManager regionsManager = container.get(BukkitAdapter.adapt(player.getWorld()));
 
 		if (regionsManager == null) {
