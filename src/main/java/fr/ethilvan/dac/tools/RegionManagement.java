@@ -7,6 +7,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
@@ -16,6 +17,7 @@ import fr.ethilvan.dac.worldedit.Selection;
 import org.bukkit.configuration.MemorySection;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -87,13 +89,19 @@ public class RegionManagement {
 					CuboidRegion cuboidRegion = new CuboidRegion(pos1, pos2);
 					addCuboidRegionToHashMap(dac, key, cuboidRegion, regionsMap);
 				}
+				else if (Objects.equals(memorySection.get(key + ".type"), "poly2d")) {
+					Polygonal2DRegion polygonal2DRegion = new Polygonal2DRegion();
+					polygonal2DRegion.setMinimumY(memorySection.getInt("minY"));
+					polygonal2DRegion.setMaximumY(memorySection.getInt("maxY"));
+					List<Map<?, ?>> points = memorySection.getMapList("points");
+				}
 			}
 		}
 		else {
-			if (regions instanceof HashMap<?,?> regionsHashMap) {
+			if (regions instanceof HashMap<?, ?> regionsHashMap) {
 				for (Object key : regionsHashMap.keySet()) {
 					Object regionMap = regionsHashMap.get(key);
-					if (regionMap instanceof HashMap<?,?> hashMap) {
+					if (regionMap instanceof HashMap<?, ?> hashMap) {
 						Region region = Selection.deserialize(hashMap).getRegion();
 						if (region instanceof CuboidRegion cuboidRegion) {
 							addCuboidRegionToHashMap(dac, (String) key, cuboidRegion, regionsMap);

@@ -1,11 +1,14 @@
 package fr.ethilvan.dac.worldedit;
 
+import com.sk89q.worldedit.math.BlockVector2;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +43,20 @@ public class Selection implements ConfigurationSerializable {
 			pos2.put("y", cuboidRegion.getPos2().getY());
 			pos2.put("z", cuboidRegion.getPos2().getZ());
 			map.put("pos2", pos2);
+		}
+		else if (this.region instanceof Polygonal2DRegion polygonal2DRegion) {
+			map.put("type", "poly2d");
+			map.put("minY", polygonal2DRegion.getMinimumY());
+			map.put("maxY", polygonal2DRegion.getMaximumY());
+
+			ArrayList<HashMap<String, Integer>> pointsList = new ArrayList<>();
+			for (BlockVector2 point : polygonal2DRegion.getPoints()) {
+				HashMap<String, Integer> pointMap = new HashMap<>();
+				pointMap.put("x", point.getX());
+				pointMap.put("z", point.getZ());
+				pointsList.add(pointMap);
+			}
+			map.put("points", pointsList);
 		}
 
 		return map;
