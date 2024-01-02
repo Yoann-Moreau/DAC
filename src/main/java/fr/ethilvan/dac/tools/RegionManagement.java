@@ -12,9 +12,12 @@ import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,10 +43,21 @@ public class RegionManagement {
 	}
 
 
+
 	public static void saveRegionToConfig(
 			org.bukkit.entity.Player player,
 			String regionName,
 			Region region
+	) {
+		saveRegionToConfig(player, regionName, region, false);
+	}
+
+
+	public static void saveRegionToConfig(
+			org.bukkit.entity.Player player,
+			String regionName,
+			Region region,
+			boolean passThrough
 	) {
 
 		RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
@@ -70,6 +84,11 @@ public class RegionManagement {
 					polygonal2DRegion.getMinimumY(),
 					polygonal2DRegion.getMaximumY()
 			));
+		}
+
+		ProtectedRegion protectedRegion = regionsManager.getRegion(regionName);
+		if (protectedRegion != null && passThrough) {
+			protectedRegion.setFlag(Flags.PASSTHROUGH, StateFlag.State.ALLOW);
 		}
 	}
 }
