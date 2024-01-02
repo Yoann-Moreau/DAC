@@ -83,10 +83,6 @@ public class Selection implements ConfigurationSerializable {
 		}
 		else if (map.get("type").equals("poly2d")) {
 			Polygonal2DRegion polygonal2DRegion = new Polygonal2DRegion();
-			int minY = (int) map.get("minY");
-			int maxY = (int) map.get("maxY");
-			polygonal2DRegion.setMinimumY(minY);
-			polygonal2DRegion.setMaximumY(maxY);
 			List<Map<?, ?>> points = (List<Map<?, ?>>) map.get("points");
 			BlockVector2 blockVector2 = BlockVector2.ZERO;
 			for (Map<?, ?> point : points) {
@@ -96,6 +92,10 @@ public class Selection implements ConfigurationSerializable {
 				);
 				polygonal2DRegion.addPoint(pos);
 			}
+			int minY = (int) map.get("minY");
+			int maxY = (int) map.get("maxY");
+			polygonal2DRegion.setMaximumY(maxY);
+			polygonal2DRegion.setMinimumY(minY);
 			return new Selection(polygonal2DRegion);
 		}
 

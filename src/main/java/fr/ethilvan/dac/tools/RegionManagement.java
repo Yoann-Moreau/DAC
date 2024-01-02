@@ -93,8 +93,6 @@ public class RegionManagement {
 				}
 				else if (Objects.equals(memorySection.get(key + ".type"), "poly2d")) {
 					Polygonal2DRegion polygonal2DRegion = new Polygonal2DRegion();
-					polygonal2DRegion.setMinimumY(memorySection.getInt(key + ".minY"));
-					polygonal2DRegion.setMaximumY(memorySection.getInt(key + ".maxY"));
 					@NotNull List<Map<?, ?>> points = memorySection.getMapList(key + ".points");
 					for (Map<?, ?> point : points) {
 						BlockVector2 blockVector2 = BlockVector2.ZERO;
@@ -104,6 +102,8 @@ public class RegionManagement {
 						);
 						polygonal2DRegion.addPoint(pos);
 					}
+					polygonal2DRegion.setMaximumY(memorySection.getInt(key + ".maxY"));
+					polygonal2DRegion.setMinimumY(memorySection.getInt(key + ".minY"));
 					addPoly2dRegionToHashMap(dac, key, polygonal2DRegion, regionsMap);
 				}
 			}
