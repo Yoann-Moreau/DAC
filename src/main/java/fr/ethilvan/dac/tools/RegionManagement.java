@@ -20,8 +20,10 @@ import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.util.WorldEditRegionConverter;
+import fr.ethilvan.dac.DAC;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class RegionManagement {
 
@@ -59,18 +61,22 @@ public class RegionManagement {
 
 
 	public static void saveRegionToConfig(
+			DAC dac,
 			org.bukkit.entity.Player player,
 			String regionName,
-			Region region
+			Region region,
+			String type
 	) {
-		saveRegionToConfig(player, regionName, region, false);
+		saveRegionToConfig(dac, player, regionName, region, type, false);
 	}
 
 
 	public static void saveRegionToConfig(
+			DAC dac,
 			org.bukkit.entity.Player player,
 			String regionName,
 			Region region,
+			String type,
 			boolean passThrough
 	) {
 
@@ -82,22 +88,39 @@ public class RegionManagement {
 			return;
 		}
 
-		if (regionsManager.getRegions().containsKey(regionName)) {
+		String wgRegion = "dac_" + type + "_" + regionName;
+
+		if (regionsManager.getRegions().containsKey(wgRegion)) {
 			player.sendMessage(Component.text("A region with that name already exists.", NamedTextColor.RED));
 			return;
 		}
 
 		if (region instanceof CuboidRegion cuboidRegion) {
-			regionsManager.addRegion(new ProtectedCuboidRegion(regionName, cuboidRegion.getPos1(), cuboidRegion.getPos2()));
+			regionsManager.addRegion(new ProtectedCuboidRegion(wgRegion, cuboidRegion.getPos1(), cuboidRegion.getPos2()));
 		}
 		else if (region instanceof Polygonal2DRegion polygonal2DRegion) {
 			regionsManager.addRegion(new ProtectedPolygonalRegion(
-					regionName,
+					wgRegion,
 					polygonal2DRegion.getPoints(),
 					polygonal2DRegion.getMinimumY(),
 					polygonal2DRegion.getMaximumY()
 			));
 		}
+
+		ConfigurationSection regions = dac.getConfig().getConfigurationSection("regions");
+		if (regions == null) {
+			regions = dac.getConfig().createSection("regions");
+		}
+
+		if (!regions.getKeys(false).contains(regionName)) {
+			regions.createSection(regionName);
+		}
+
+		ConfigurationSection regionSection = regions.getConfigurationSection(regionName);
+		assert regionSection != null;
+		regionSection.set(type, wgRegion);
+
+		dac.saveConfig();
 
 		ProtectedRegion protectedRegion = regionsManager.getRegion(regionName);
 		if (protectedRegion != null && passThrough) {

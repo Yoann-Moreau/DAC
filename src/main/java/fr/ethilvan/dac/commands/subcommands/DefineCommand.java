@@ -44,6 +44,6 @@ public class DefineCommand extends Subcommand {
 			return;
 		}
 
-		RegionManagement.saveRegionToConfig(player, "dac_" + args[1], region, true);
+		RegionManagement.saveRegionToConfig(dac, player, args[1], region, "base", true);
 	}
 }

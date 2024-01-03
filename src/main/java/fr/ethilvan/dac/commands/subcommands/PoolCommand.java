@@ -40,7 +40,7 @@ public class PoolCommand extends Subcommand {
 		}
 
 		String regionName = args[1];
-		if (RegionManagement.getExistingRegion(player, "dac_" + regionName) == null) {
+		if (RegionManagement.getExistingRegion(player, "dac_base_" + regionName) == null) {
 			player.sendMessage(Component.text("You must first use 'dac define'", NamedTextColor.RED));
 			return;
 		}
@@ -50,6 +50,6 @@ public class PoolCommand extends Subcommand {
 			return;
 		}
 
-		RegionManagement.saveRegionToConfig(player, "dac_pool_" + args[1], region);
+		RegionManagement.saveRegionToConfig(dac, player, args[1], region, "pool");
 	}
 }
