@@ -122,7 +122,7 @@ public class RegionManagement {
 
 		dac.saveConfig();
 
-		ProtectedRegion protectedRegion = regionsManager.getRegion(regionName);
+		ProtectedRegion protectedRegion = regionsManager.getRegion(wgRegion);
 		if (protectedRegion != null && passThrough) {
 			protectedRegion.setFlag(Flags.PASSTHROUGH, StateFlag.State.ALLOW);
 		}
