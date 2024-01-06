@@ -11,6 +11,7 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
+import fr.ethilvan.dac.game.DacGame;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -83,7 +84,7 @@ public class InitCommand extends Subcommand {
 
 			for (ProtectedRegion item : set) {
 				if (item.equals(region)) {
-					createDacGame(player, dacName);
+					createDacGame(dac, player, dacName);
 					return;
 				}
 			}
@@ -93,7 +94,13 @@ public class InitCommand extends Subcommand {
 	}
 
 
-	private void createDacGame(Player player, String dacName) {
+	private void createDacGame(DAC dac, Player player, String dacName) {
+		if (dac.getGames().containsKey(dacName)) {
+			player.sendMessage(Component.text("A DAC game already exists in this region.", NamedTextColor.RED));
+			return;
+		}
+
+		dac.addGame(dacName, new DacGame());
 		player.sendMessage(Component.text("A DAC game has been created in the " + dacName + " region.",
 				NamedTextColor.GREEN));
 	}
