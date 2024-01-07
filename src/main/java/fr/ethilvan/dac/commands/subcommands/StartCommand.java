@@ -12,10 +12,8 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
 import fr.ethilvan.dac.game.DacGame;
-import fr.ethilvan.dac.tools.Colors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,20 +21,20 @@ import org.bukkit.entity.Player;
 
 import java.util.Set;
 
-public class JoinCommand extends Subcommand {
+public class StartCommand extends Subcommand {
 	@Override
 	public String getName() {
-		return "join";
+		return "start";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Joins a DAC game with the specified color";
+		return "Starts the DAC game of the corresponding region";
 	}
 
 	@Override
 	public String getSyntax() {
-		return "/dac join <color>";
+		return "/dac start";
 	}
 
 	@Override
@@ -45,21 +43,6 @@ public class JoinCommand extends Subcommand {
 		Player player = Bukkit.getPlayer(commandSender.getName());
 		if (player == null) {
 			Bukkit.getLogger().warning("This command must be used by a player.");
-			return;
-		}
-
-		if (args.length < 2) {
-			player.sendMessage(Component.text("You must provide a color.", NamedTextColor.RED));
-			return;
-		}
-
-		String color = args[1];
-
-		if (!Colors.getAvailableColors().contains(color.toUpperCase())) {
-			String colorsString = Colors.getChatColorsListInString();
-			MiniMessage mm = MiniMessage.miniMessage();
-			Component parsed = mm.deserialize("<color:red>The available colors are: " + colorsString);
-			player.sendMessage(parsed);
 			return;
 		}
 
@@ -94,32 +77,42 @@ public class JoinCommand extends Subcommand {
 
 			for (ProtectedRegion item : set) {
 				if (item.equals(region)) {
-					joinDacGame(dac, player, dacName, color);
+					this.startGame(dac, player, dacName);
 					return;
 				}
 			}
 		}
-
-		player.sendMessage(Component.text("You are not in a DAC region.", NamedTextColor.RED));
 	}
 
 
-	private void joinDacGame(DAC dac, Player player, String dacName, String color) {
+	private void startGame(DAC dac, Player player, String dacName) {
 		if (!dac.getGames().containsKey(dacName)) {
 			player.sendMessage(Component.text("No DAC games exists in this region.", NamedTextColor.RED));
 			return;
 		}
 
 		DacGame dacGame = dac.getGames().get(dacName);
-		if (dacGame.getPlayerColors().containsKey(player.getName())) {
-			player.sendMessage(Component.text("You have already joined a game in this region.", NamedTextColor.RED));
+		if (dacGame.isStarted()) {
+			player.sendMessage(Component.text("A DAC game has already been started in this region.", NamedTextColor.RED));
 			return;
 		}
 
-		dacGame.addPlayerColor(player.getName(), color);
-		dacGame.addLocation(player.getName(), player.getLocation());
-		dacGame.addPlayerName(player.getName());
-		player.sendMessage(Component.text("You have joined the DAC game in the " + dacName + " region.",
-				NamedTextColor.GREEN));
+		if (dacGame.getPlayerNames().isEmpty()) {
+			player.sendMessage(Component.text("No players have joined this DAC game.", NamedTextColor.RED));
+			return;
+		}
+
+		dacGame.setStarted(true);
+		for (String playerName : dacGame.getPlayerNames()) {
+			Player playerInLoop = Bukkit.getPlayer(playerName);
+			if (playerInLoop == null) {
+				dacGame.removePlayerColor(playerName);
+				dacGame.removeLocation(playerName);
+				dacGame.removePlayerName(playerName);
+				continue;
+			}
+
+			playerInLoop.sendMessage(Component.text("The DAC game has started", NamedTextColor.GREEN));
+		}
 	}
 }
