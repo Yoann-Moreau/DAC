@@ -1,6 +1,6 @@
 # DAC
 
-DAC is papermc plugin for Minecraft 1.20.4 based on the DACv2 plugin made by aumgn.
+DAC is papermc plugin for Minecraft 1.20.4 inspired by the DACv2 plugin made by aumgn.
 
 DAC aka Dé à Coudre is french turn-based mini-game where players need to jump into a pool from a diving platform. 
 Each time a player hits the water, a colored block is placed at the corresponding location. 
@@ -8,7 +8,7 @@ If a player misses the water, he is eliminated. The other players continue until
 
 ## Dependencies
 
-This plugin requires WorldEdit 7.2.18 or superior.
+This plugin requires WorldEdit 7.2.18 or superior and WorldGuard 7.0.9 or superior.
 
 ## Installation
 
