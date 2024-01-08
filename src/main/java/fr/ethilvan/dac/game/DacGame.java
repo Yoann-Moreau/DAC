@@ -12,7 +12,7 @@ import java.util.Random;
 public class DacGame {
 	private HashMap<String, Material> playerColors;
 
-	private HashMap<String, Location> locations;
+	private HashMap<String, Location> playerLocations;
 
 	private ArrayList<String> playerNames;
 
@@ -21,7 +21,7 @@ public class DacGame {
 
 	public DacGame() {
 		this.playerColors = new HashMap<>();
-		this.locations = new HashMap<>();
+		this.playerLocations = new HashMap<>();
 		this.playerNames = new ArrayList<>();
 		this.started = false;
 	}
@@ -46,22 +46,22 @@ public class DacGame {
 	}
 
 
-	public HashMap<String, Location> getLocations() {
-		return this.locations;
+	public HashMap<String, Location> getPlayerLocations() {
+		return this.playerLocations;
 	}
 
-	public void setLocations(HashMap<String, Location> locations) {
-		this.locations = locations;
+	public void setPlayerLocations(HashMap<String, Location> playerLocations) {
+		this.playerLocations = playerLocations;
 	}
 
-	public void addLocation(String playerName, Location location) {
-		if (!this.locations.containsKey(playerName)) {
-			this.locations.put(playerName, location);
+	public void addPlayerLocation(String playerName, Location location) {
+		if (!this.playerLocations.containsKey(playerName)) {
+			this.playerLocations.put(playerName, location);
 		}
 	}
 
-	public void removeLocation(String playerName) {
-		this.locations.remove(playerName);
+	public void removePlayerLocation(String playerName) {
+		this.playerLocations.remove(playerName);
 	}
 
 

@@ -117,7 +117,7 @@ public class JoinCommand extends Subcommand {
 		}
 
 		dacGame.addPlayerColor(player.getName(), color);
-		dacGame.addLocation(player.getName(), player.getLocation());
+		dacGame.addPlayerLocation(player.getName(), player.getLocation());
 		dacGame.addPlayerName(player.getName());
 		player.sendMessage(Component.text("You have joined the DAC game in the " + dacName + " region.",
 				NamedTextColor.GREEN));

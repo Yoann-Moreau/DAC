@@ -102,17 +102,19 @@ public class StartCommand extends Subcommand {
 			return;
 		}
 
-		dacGame.setStarted(true);
 		for (String playerName : dacGame.getPlayerNames()) {
 			Player playerInLoop = Bukkit.getPlayer(playerName);
 			if (playerInLoop == null) {
 				dacGame.removePlayerColor(playerName);
-				dacGame.removeLocation(playerName);
+				dacGame.removePlayerLocation(playerName);
 				dacGame.removePlayerName(playerName);
 				continue;
 			}
 
 			playerInLoop.sendMessage(Component.text("The DAC game has started", NamedTextColor.GREEN));
 		}
+
+		dacGame.randomizePlayerOrder();
+		dacGame.setStarted(true);
 	}
 }
