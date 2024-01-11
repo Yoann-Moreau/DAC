@@ -23,16 +23,14 @@ public final class DAC extends JavaPlugin {
 		this.games = games;
 	}
 
-	public HashMap<String, DacGame> addGame(String dacName, DacGame dacGame) {
+	public void addGame(String dacName, DacGame dacGame) {
 		if (!this.games.containsKey(dacName)) {
 			this.games.put(dacName, dacGame);
 		}
-		return this.games;
 	}
 
-	public HashMap<String, DacGame> removeGame(String dacName) {
+	public void removeGame(String dacName) {
 		this.games.remove(dacName);
-		return this.games;
 	}
 
 

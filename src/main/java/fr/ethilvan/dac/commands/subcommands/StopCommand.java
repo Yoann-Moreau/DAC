@@ -21,30 +21,88 @@ import org.bukkit.entity.Player;
 
 import java.util.Set;
 
-public class StartCommand extends Subcommand {
+public class StopCommand extends Subcommand {
 	@Override
 	public String getName() {
-		return "start";
+		return "stop";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Starts the DAC game of the corresponding region";
+		return "Stops the DAC game currently in progress if there is one.";
 	}
 
 	@Override
 	public String getSyntax() {
-		return "/dac start";
+		return "/dac stop [dacName]";
 	}
 
 	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
 
 		Player player = Bukkit.getPlayer(commandSender.getName());
-		if (player == null) {
-			Bukkit.getLogger().warning("This command must be used by a player.");
+		if (player == null && args.length < 2) {
+			Bukkit.getLogger().warning("This command requires a DAC name when not used by a player.");
 			return;
 		}
+
+		String dacName = "";
+		if (args.length >= 2) {
+			dacName = args[1];
+		}
+
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
+		if (config == null) {
+			if (player == null) {
+				Bukkit.getLogger().warning("There are no defined DAC regions.");
+				return;
+			}
+			player.sendMessage(Component.text("There are no defined DAC regions.", NamedTextColor.RED));
+			return;
+		}
+
+		if (player == null || !dacName.isEmpty()) {
+			stopGame(dac, player, dacName);
+			return;
+		}
+
+		stopGame(dac,player);
+	}
+
+
+	private void stopGame(DAC dac, Player player, String dacName) {
+
+		if (!dac.getGames().containsKey(dacName)) {
+			if (player == null) {
+				Bukkit.getLogger().warning("No DAC games exists in this region.");
+				return;
+			}
+			player.sendMessage(Component.text("No DAC games exists in this region.", NamedTextColor.RED));
+			return;
+		}
+
+		DacGame dacGame = dac.getGames().get(dacName);
+		if (!dacGame.isStarted()) {
+			if (player == null) {
+				Bukkit.getLogger().warning("No DAC game has been started in this region.");
+				return;
+			}
+			player.sendMessage(Component.text("No DAC game has been started in this region.", NamedTextColor.RED));
+			return;
+		}
+
+
+		resetAndStopGame(dac, dacGame, dacName);
+		if (player == null) {
+			Bukkit.getLogger().info("The game in the " + dacName + " region has been stopped.");
+			return;
+		}
+		player.sendMessage(Component.text("The game in the " + dacName + " region has been stopped.",
+				NamedTextColor.GREEN));
+	}
+
+
+	private void stopGame(DAC dac, Player player) {
 
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
 		if (config == null) {
@@ -77,7 +135,16 @@ public class StartCommand extends Subcommand {
 
 			for (ProtectedRegion item : set) {
 				if (item.equals(region)) {
-					this.startGame(dac, player, dacName);
+
+					if (!dac.getGames().containsKey(dacName)) {
+						player.sendMessage(Component.text("No DAC games exists in this region.", NamedTextColor.RED));
+						return;
+					}
+
+					DacGame dacGame = dac.getGames().get(dacName);
+					resetAndStopGame(dac, dacGame, dacName);
+					player.sendMessage(Component.text("The game in the " + dacName + " region has been stopped.",
+							NamedTextColor.GREEN));
 					return;
 				}
 			}
@@ -87,36 +154,11 @@ public class StartCommand extends Subcommand {
 	}
 
 
-	private void startGame(DAC dac, Player player, String dacName) {
-		if (!dac.getGames().containsKey(dacName)) {
-			player.sendMessage(Component.text("No DAC games exists in this region.", NamedTextColor.RED));
-			return;
-		}
-
-		DacGame dacGame = dac.getGames().get(dacName);
-		if (dacGame.isStarted()) {
-			player.sendMessage(Component.text("A DAC game has already been started in this region.", NamedTextColor.RED));
-			return;
-		}
-
-		if (dacGame.getPlayerNames().isEmpty()) {
-			player.sendMessage(Component.text("No players have joined this DAC game.", NamedTextColor.RED));
-			return;
-		}
-
-		for (String playerName : dacGame.getPlayerNames()) {
-			Player playerInLoop = Bukkit.getPlayer(playerName);
-			if (playerInLoop == null) {
-				dacGame.removePlayerColor(playerName);
-				dacGame.removePlayerLocation(playerName);
-				dacGame.removePlayerName(playerName);
-				continue;
-			}
-
-			playerInLoop.sendMessage(Component.text("The DAC game has started", NamedTextColor.GREEN));
-		}
-
-		dacGame.randomizePlayerOrder();
-		dacGame.setStarted(true);
+	private void resetAndStopGame(DAC dac, DacGame dacGame, String dacName) {
+		dacGame.setStarted(false);
+		dacGame.setPlayerColors(null);
+		dacGame.setPlayerLocations(null);
+		dacGame.setPlayerNames(null);
+		dac.removeGame(dacName);
 	}
 }
