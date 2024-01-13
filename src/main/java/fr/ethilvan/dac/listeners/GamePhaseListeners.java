@@ -14,7 +14,7 @@ public class GamePhaseListeners implements Listener {
 
 	@EventHandler
 	public void onGameStart(GameStartEvent e) {
-		Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(e.getDacGame(), e.getDacGame().getCurrentPlayerNames()));
+		Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(e.getDacGame()));
 	}
 
 
@@ -26,7 +26,11 @@ public class GamePhaseListeners implements Listener {
 				player.sendMessage(Component.text("A new DAC turn has begun.", NamedTextColor.GREEN));
 			}
 		}
-		Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(e.getDacGame(), e.getPlayerNames().get(0)));
+		Bukkit.getPluginManager().callEvent(
+				new PlayerTurnEvent(e.getDacGame(),
+						e.getDacGame().getCurrentPlayerNames().get(0)
+				)
+		);
 	}
 
 
@@ -34,6 +38,19 @@ public class GamePhaseListeners implements Listener {
 	public void onPlayerTurn(PlayerTurnEvent e) {
 		if (e.getPlayer() == null) {
 			return;
+		}
+
+		e.getDacGame().setCurrentPlayerName(e.getPlayer().getName());
+
+		for (String playerName : e.getDacGame().getPlayerNames()) {
+			if (e.getPlayer().getName().equals(playerName)) {
+				continue;
+			}
+			Player player = Bukkit.getPlayer(playerName);
+			if (player != null) {
+				player.teleport(e.getDacGame().getPlayerLocations().get(playerName));
+				player.sendMessage(Component.text("It's " + playerName + "'s turn.", NamedTextColor.GREEN));
+			}
 		}
 
 		e.getPlayer().sendMessage(Component.text("It's your turn.", NamedTextColor.GOLD));

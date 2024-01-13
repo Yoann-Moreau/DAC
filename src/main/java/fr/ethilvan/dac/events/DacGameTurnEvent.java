@@ -13,12 +13,9 @@ public class DacGameTurnEvent extends Event {
 
 	private final DacGame dacGame;
 
-	private final ArrayList<String> playerNames;
 
-
-	public DacGameTurnEvent(DacGame dacGame, ArrayList<String> playerNames) {
+	public DacGameTurnEvent(DacGame dacGame) {
 		this.dacGame = dacGame;
-		this.playerNames = playerNames;
 	}
 
 
@@ -34,10 +31,5 @@ public class DacGameTurnEvent extends Event {
 
 	public DacGame getDacGame() {
 		return this.dacGame;
-	}
-
-
-	public ArrayList<String> getPlayerNames() {
-		return this.playerNames;
 	}
 }

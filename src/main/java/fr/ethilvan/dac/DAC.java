@@ -2,6 +2,7 @@ package fr.ethilvan.dac;
 
 import fr.ethilvan.dac.commands.DacCommand;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.listeners.GameListeners;
 import fr.ethilvan.dac.listeners.GamePhaseListeners;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,6 +44,9 @@ public final class DAC extends JavaPlugin {
 
 		// Register custom events
 		Bukkit.getServer().getPluginManager().registerEvents(new GamePhaseListeners(), this);
+
+		// Register events
+		Bukkit.getServer().getPluginManager().registerEvents(new GameListeners(this), this);
 
 		getLogger().info("Enabled " + this.getName());
 	}

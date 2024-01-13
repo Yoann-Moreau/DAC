@@ -26,7 +26,11 @@ public class DacGame {
 
 	private ArrayList<String> currentPlayerNames;
 
+	private String currentPlayerName;
+
 	private boolean started;
+
+	private boolean jumpOver;
 
 	private final Location divingLocation;
 
@@ -39,6 +43,7 @@ public class DacGame {
 		this.playerNames = new ArrayList<>();
 		this.currentPlayerNames = new ArrayList<>();
 		this.started = false;
+		this.jumpOver = false;
 
 		ConfigurationSection config = this.dac.getConfig().getConfigurationSection("regions." + dacName);
 
@@ -140,12 +145,30 @@ public class DacGame {
 	}
 
 
+	public String getCurrentPlayerName() {
+		return this.currentPlayerName;
+	}
+
+	public void setCurrentPlayerName(String currentPlayerName) {
+		this.currentPlayerName = currentPlayerName;
+	}
+
+
 	public boolean isStarted() {
 		return this.started;
 	}
 
 	public void setStarted(boolean started) {
 		this.started = started;
+	}
+
+
+	public boolean isJumpOver() {
+		return jumpOver;
+	}
+
+	public void setJumpOver(boolean jumpOver) {
+		this.jumpOver = jumpOver;
 	}
 
 
