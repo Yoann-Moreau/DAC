@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 public class GameListeners implements Listener {
 
-	private DAC dac;
+	private final DAC dac;
 
 
 	public GameListeners(DAC dac) {
@@ -144,9 +144,8 @@ public class GameListeners implements Listener {
 				if (currentPlayerNames.equals(eliminatedPlayerNames) && currentPlayerNames.size() > 1) {
 					// Launch next turn with every eliminated players
 					dacGame.setEliminatedPlayerNames(new ArrayList<>());
-					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
-					}, 10L);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> Bukkit.getPluginManager()
+							.callEvent(new DacGameTurnEvent(dacGame)), 10L);
 					return;
 				}
 
@@ -156,9 +155,8 @@ public class GameListeners implements Listener {
 				}
 
 				// Launch next turn without eliminated players
-				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
-				}, 10L);
+				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> Bukkit.getPluginManager()
+						.callEvent(new DacGameTurnEvent(dacGame)), 10L);
 				return;
 			}
 
