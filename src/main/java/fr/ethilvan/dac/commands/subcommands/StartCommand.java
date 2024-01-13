@@ -117,6 +117,10 @@ public class StartCommand extends Subcommand {
 			playerInLoop.sendMessage(Component.text("The DAC game has started", NamedTextColor.GREEN));
 		}
 
+		if (!this.refillPool(dac, dacName, player)) {
+			return;
+		}
+
 		dacGame.randomizePlayerOrder();
 		dacGame.setCurrentPlayerNames(dacGame.getPlayerNames());
 		dacGame.setStarted(true);

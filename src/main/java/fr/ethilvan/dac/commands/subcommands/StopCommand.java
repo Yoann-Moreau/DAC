@@ -165,27 +165,15 @@ public class StopCommand extends Subcommand {
 
 	private boolean resetAndStopGame(DAC dac, DacGame dacGame, String dacName, Player player) {
 
-		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
-		assert config != null;
-		String poolRegionName = config.getString("pool");
-
-		Region region = RegionManagement.getExistingRegion(player, poolRegionName);
-		if (region == null) {
+		if (!this.refillPool(dac, dacName, player)) {
 			return false;
 		}
 
-		String worldName = config.getString("world");
-		assert worldName != null;
-		World world = Bukkit.getWorld(worldName);
-
-		if (world == null) {
-			player.sendMessage(Component.text("Error while retrieving world.", NamedTextColor.RED));
-			return false;
-		}
-
-		for (BlockVector3 blockVector3 : region) {
-			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
-			block.setType(Material.WATER);
+		for (String playerName : dacGame.getPlayerNames()) {
+			Player playerInLoop = Bukkit.getPlayer(playerName);
+			if (playerInLoop != null) {
+				playerInLoop.sendMessage(Component.text("The DAC game has been stopped", NamedTextColor.RED));
+			}
 		}
 
 		dacGame.setStarted(false);

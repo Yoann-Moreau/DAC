@@ -43,6 +43,10 @@ public class GameListeners implements Listener {
 			assert poolRegionName != null;
 			DacGame dacGame = this.dac.getGames().get(dacName);
 
+			if (dacGame.getCurrentPlayerName() == null) {
+				continue;
+			}
+
 			if (!dacGame.getCurrentPlayerName().equals(playerName)) {
 				continue;
 			}
@@ -77,14 +81,14 @@ public class GameListeners implements Listener {
 				int nextIndex = currentPlayerIndex + 1;
 				if (nextIndex >= dacGame.getCurrentPlayerNames().size()) {
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-						this.fillPoolPillar(dacGame, region, player, x, z);
+						this.placePoolPillar(dacGame, region, player, x, z);
 						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
 					}, 10L);
 					return;
 				}
 				String nextPlayerName = dacGame.getCurrentPlayerNames().get(nextIndex);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-					this.fillPoolPillar(dacGame, region, player, x, z);
+					this.placePoolPillar(dacGame, region, player, x, z);
 					Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
 				}, 10L);
 			}
@@ -92,7 +96,7 @@ public class GameListeners implements Listener {
 	}
 
 
-	private void fillPoolPillar(DacGame dacGame, ProtectedRegion region, Player player, int x, int z) {
+	private void placePoolPillar(DacGame dacGame, ProtectedRegion region, Player player, int x, int z) {
 		int minY = region.getMinimumPoint().getBlockY();
 		int maxY = region.getMaximumPoint().getBlockY();
 		for (int y = minY; y <= maxY; y++) {
