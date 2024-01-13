@@ -1,8 +1,9 @@
 package fr.ethilvan.dac.commands.subcommands;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -12,9 +13,13 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -92,7 +97,9 @@ public class StopCommand extends Subcommand {
 		}
 
 
-		this.resetAndStopGame(dac, dacGame, dacName);
+		if (!this.resetAndStopGame(dac, dacGame, dacName, player)) {
+			return;
+		}
 		if (player == null) {
 			Bukkit.getLogger().info("The game in the " + dacName + " region has been stopped.");
 			return;
@@ -111,7 +118,7 @@ public class StopCommand extends Subcommand {
 		}
 
 		Location wgLocation = BukkitAdapter.adapt(player.getLocation());
-		World wgWorld = BukkitAdapter.adapt(player.getWorld());
+		com.sk89q.worldedit.world.World wgWorld = BukkitAdapter.adapt(player.getWorld());
 
 		RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
 		RegionManager regionsManager = container.get(wgWorld);
@@ -142,7 +149,9 @@ public class StopCommand extends Subcommand {
 					}
 
 					DacGame dacGame = dac.getGames().get(dacName);
-					this.resetAndStopGame(dac, dacGame, dacName);
+					if (!this.resetAndStopGame(dac, dacGame, dacName, player)) {
+						return;
+					}
 					player.sendMessage(Component.text("The game in the " + dacName + " region has been stopped.",
 							NamedTextColor.GREEN));
 					return;
@@ -154,11 +163,37 @@ public class StopCommand extends Subcommand {
 	}
 
 
-	private void resetAndStopGame(DAC dac, DacGame dacGame, String dacName) {
+	private boolean resetAndStopGame(DAC dac, DacGame dacGame, String dacName, Player player) {
+
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
+		assert config != null;
+		String poolRegionName = config.getString("pool");
+
+		Region region = RegionManagement.getExistingRegion(player, poolRegionName);
+		if (region == null) {
+			return false;
+		}
+
+		String worldName = config.getString("world");
+		assert worldName != null;
+		World world = Bukkit.getWorld(worldName);
+
+		if (world == null) {
+			player.sendMessage(Component.text("Error while retrieving world.", NamedTextColor.RED));
+			return false;
+		}
+
+		for (BlockVector3 blockVector3 : region) {
+			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
+			block.setType(Material.WATER);
+		}
+
 		dacGame.setStarted(false);
 		dacGame.setPlayerColors(null);
 		dacGame.setPlayerLocations(null);
 		dacGame.setPlayerNames(null);
 		dac.removeGame(dacName);
+
+		return true;
 	}
 }
