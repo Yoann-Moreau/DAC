@@ -18,7 +18,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+
+import java.util.ArrayList;
 
 public class GameListeners implements Listener {
 
@@ -103,5 +106,64 @@ public class GameListeners implements Listener {
 			player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerColors().get(player.getName()));
 		}
 		dacGame.setJumpOver(false);
+	}
+
+
+	@EventHandler
+	public void onPlayerFallDamage(EntityDamageEvent e) {
+		if (!(e.getEntity() instanceof Player player)) {
+			return;
+		}
+
+		if (e.getCause() != EntityDamageEvent.DamageCause.FALL) {
+			return;
+		}
+
+		for (String dacName : this.dac.getGames().keySet()) {
+			DacGame dacGame = this.dac.getGames().get(dacName);
+
+			String currentPlayerName = dacGame.getCurrentPlayerName();
+			if (currentPlayerName == null) {
+				continue;
+			}
+
+			if (!player.getName().equals(currentPlayerName)) {
+				continue;
+			}
+
+			e.setCancelled(true);
+			dacGame.setJumpOver(true);
+			dacGame.addEliminatedPlayerName(currentPlayerName);
+
+			int currentPlayerIndex = dacGame.getCurrentPlayerNames().indexOf(currentPlayerName);
+			int nextIndex = currentPlayerIndex + 1;
+
+			if (nextIndex >= dacGame.getCurrentPlayerNames().size()) {
+				ArrayList<String> currentPlayerNames = dacGame.getCurrentPlayerNames();
+				ArrayList<String> eliminatedPlayerNames = dacGame.getEliminatedPlayerNames();
+				if (currentPlayerNames.equals(eliminatedPlayerNames) && currentPlayerNames.size() > 1) {
+					// Launch next turn with every eliminated players
+					dacGame.setEliminatedPlayerNames(new ArrayList<>());
+					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
+						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
+					}, 10L);
+					return;
+				}
+
+				// Remove eliminated players
+				for (String playerName : eliminatedPlayerNames) {
+					dacGame.removeCurrentPlayerName(playerName);
+				}
+
+				// Launch next turn without eliminated players
+				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
+					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
+				}, 10L);
+				return;
+			}
+
+			String nextPlayerName = dacGame.getCurrentPlayerNames().get(nextIndex);
+			Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
+		}
 	}
 }

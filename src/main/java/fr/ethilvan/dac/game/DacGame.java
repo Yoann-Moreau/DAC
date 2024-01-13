@@ -19,12 +19,10 @@ public class DacGame {
 	private final String name;
 
 	private HashMap<String, Material> playerColors;
-
 	private HashMap<String, Location> playerLocations;
-
 	private ArrayList<String> playerNames;
-
 	private ArrayList<String> currentPlayerNames;
+	private ArrayList<String> eliminatedPlayerNames;
 
 	private String currentPlayerName;
 
@@ -42,6 +40,7 @@ public class DacGame {
 		this.playerLocations = new HashMap<>();
 		this.playerNames = new ArrayList<>();
 		this.currentPlayerNames = new ArrayList<>();
+		this.eliminatedPlayerNames = new ArrayList<>();
 		this.started = false;
 		this.jumpOver = false;
 
@@ -151,6 +150,25 @@ public class DacGame {
 
 	public void setCurrentPlayerName(String currentPlayerName) {
 		this.currentPlayerName = currentPlayerName;
+	}
+
+
+	public ArrayList<String> getEliminatedPlayerNames() {
+		return this.eliminatedPlayerNames;
+	}
+
+	public void setEliminatedPlayerNames(ArrayList<String> eliminatedPlayerNames) {
+		this.eliminatedPlayerNames = eliminatedPlayerNames;
+	}
+
+	public void addEliminatedPlayerName(String playerName) {
+		if (!this.eliminatedPlayerNames.contains(playerName)) {
+			this.eliminatedPlayerNames.add(playerName);
+		}
+	}
+
+	public void removeEliminatedPlayerName(String playerName) {
+		this.eliminatedPlayerNames.remove(playerName);
 	}
 
 

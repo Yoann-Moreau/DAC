@@ -20,6 +20,11 @@ public class GamePhaseListeners implements Listener {
 
 	@EventHandler
 	public void onDacGameTurn(DacGameTurnEvent e) {
+		// End game if no players left
+		if (e.getDacGame().getCurrentPlayerNames().isEmpty()) {
+			return;
+		}
+
 		for (String playerName : e.getDacGame().getPlayerNames()) {
 			Player player = Bukkit.getPlayer(playerName);
 			if (player != null) {
