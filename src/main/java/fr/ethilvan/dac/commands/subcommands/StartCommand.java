@@ -11,6 +11,7 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
+import fr.ethilvan.dac.events.GameStartEvent;
 import fr.ethilvan.dac.game.DacGame;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -117,6 +118,8 @@ public class StartCommand extends Subcommand {
 		}
 
 		dacGame.randomizePlayerOrder();
+		dacGame.setCurrentPlayerNames(dacGame.getPlayerNames());
 		dacGame.setStarted(true);
+		Bukkit.getPluginManager().callEvent(new GameStartEvent(dacGame));
 	}
 }

@@ -100,7 +100,7 @@ public class InitCommand extends Subcommand {
 			return;
 		}
 
-		dac.addGame(dacName, new DacGame());
+		dac.addGame(dacName, new DacGame(dac, dacName));
 		player.sendMessage(Component.text("A DAC game has been created in the " + dacName + " region.",
 				NamedTextColor.GREEN));
 	}

@@ -61,6 +61,7 @@ public class DivingCommand extends Subcommand {
 		pos.put("yaw", player.getLocation().getYaw());
 
 		section.set("diving", pos);
+		section.set("world", player.getWorld().getName());
 
 		dac.saveConfig();
 	}

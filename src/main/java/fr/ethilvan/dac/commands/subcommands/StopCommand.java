@@ -62,7 +62,7 @@ public class StopCommand extends Subcommand {
 		}
 
 		if (player == null || !dacName.isEmpty()) {
-			stopGame(dac, player, dacName);
+			this.stopGame(dac, player, dacName);
 			return;
 		}
 
@@ -92,7 +92,7 @@ public class StopCommand extends Subcommand {
 		}
 
 
-		resetAndStopGame(dac, dacGame, dacName);
+		this.resetAndStopGame(dac, dacGame, dacName);
 		if (player == null) {
 			Bukkit.getLogger().info("The game in the " + dacName + " region has been stopped.");
 			return;
@@ -142,7 +142,7 @@ public class StopCommand extends Subcommand {
 					}
 
 					DacGame dacGame = dac.getGames().get(dacName);
-					resetAndStopGame(dac, dacGame, dacName);
+					this.resetAndStopGame(dac, dacGame, dacName);
 					player.sendMessage(Component.text("The game in the " + dacName + " region has been stopped.",
 							NamedTextColor.GREEN));
 					return;
