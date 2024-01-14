@@ -11,6 +11,7 @@ import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -102,7 +103,21 @@ public class GameListeners implements Listener {
 		int minY = region.getMinimumPoint().getBlockY();
 		int maxY = region.getMaximumPoint().getBlockY();
 		for (int y = minY; y <= maxY; y++) {
-			player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerColors().get(player.getName()));
+
+			if (y == maxY) {
+				if (!player.getWorld().getBlockAt(x - 1, y, z).getType().equals(Material.WATER) &&
+						!player.getWorld().getBlockAt(x + 1, y, z).getType().equals(Material.WATER) &&
+						!player.getWorld().getBlockAt(x, y, z - 1).getType().equals(Material.WATER) &&
+						!player.getWorld().getBlockAt(x, y, z + 1).getType().equals(Material.WATER)) {
+					player.getWorld().getBlockAt(x, y, z).setType(Material.GLASS);
+				}
+				else {
+					player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerColors().get(player.getName()));
+				}
+			}
+			else {
+				player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerColors().get(player.getName()));
+			}
 		}
 	}
 
