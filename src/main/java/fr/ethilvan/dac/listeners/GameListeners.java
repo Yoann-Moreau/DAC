@@ -8,6 +8,8 @@ import fr.ethilvan.dac.events.DacGameTurnEvent;
 import fr.ethilvan.dac.events.PlayerTurnEvent;
 import fr.ethilvan.dac.game.DacGame;
 import fr.ethilvan.dac.tools.RegionManagement;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -131,6 +133,8 @@ public class GameListeners implements Listener {
 			dacGame.setJumpOver(true);
 			dacGame.addEliminatedPlayerName(currentPlayerName);
 
+			player.sendMessage(Component.text("You have been eliminated.", NamedTextColor.RED));
+
 			int currentPlayerIndex = dacGame.getCurrentPlayerNames().indexOf(currentPlayerName);
 			int nextIndex = currentPlayerIndex + 1;
 
@@ -138,6 +142,18 @@ public class GameListeners implements Listener {
 				ArrayList<String> currentPlayerNames = dacGame.getCurrentPlayerNames();
 				ArrayList<String> eliminatedPlayerNames = dacGame.getEliminatedPlayerNames();
 				if (currentPlayerNames.equals(eliminatedPlayerNames) && currentPlayerNames.size() > 1) {
+
+					for (String playerName : dacGame.getPlayerNames()) {
+						Player playerInLoop = Bukkit.getPlayer(playerName);
+						if (playerInLoop == null) {
+							continue;
+						}
+						playerInLoop.sendMessage(
+								Component.text("All remaining players have been eliminated this turn, let's try again.",
+										NamedTextColor.GREEN)
+						);
+					}
+
 					// Launch next turn with every eliminated players
 					dacGame.setEliminatedPlayerNames(new ArrayList<>());
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
@@ -160,8 +176,11 @@ public class GameListeners implements Listener {
 				return;
 			}
 
-			String nextPlayerName = dacGame.getCurrentPlayerNames().get(nextIndex);
-			Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
+				player.teleport(dacGame.getPlayerLocations().get(player.getName()));
+				String nextPlayerName = dacGame.getCurrentPlayerNames().get(nextIndex);
+				Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
+			}, 10L);
 		}
 	}
 }

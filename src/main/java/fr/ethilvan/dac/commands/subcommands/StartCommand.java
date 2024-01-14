@@ -20,6 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public class StartCommand extends Subcommand {
@@ -131,7 +132,8 @@ public class StartCommand extends Subcommand {
 		}
 
 		dacGame.randomizePlayerOrder();
-		dacGame.setCurrentPlayerNames(dacGame.getPlayerNames());
+		ArrayList<String> currentPlayers = new ArrayList<>(dacGame.getPlayerNames());
+		dacGame.setCurrentPlayerNames(currentPlayers);
 		dacGame.setStarted(true);
 		Bukkit.getPluginManager().callEvent(new GameStartEvent(dacGame));
 	}

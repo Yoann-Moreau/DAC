@@ -25,6 +25,19 @@ public class GamePhaseListeners implements Listener {
 			return;
 		}
 
+		if (e.getDacGame().getCurrentPlayerNames().size() == 1 && e.getDacGame().getPlayerNames().size() > 1) {
+			for (String playerName : e.getDacGame().getPlayerNames()) {
+				Player player = Bukkit.getPlayer(playerName);
+				if (player == null) {
+					continue;
+				}
+				player.sendMessage(Component.text("The DAC game is over.", NamedTextColor.GREEN));
+				player.sendMessage(Component.text("The winner is " + e.getDacGame().getCurrentPlayerNames().get(0),
+						NamedTextColor.GREEN));
+			}
+			return;
+		}
+
 		for (String playerName : e.getDacGame().getPlayerNames()) {
 			Player player = Bukkit.getPlayer(playerName);
 			if (player != null) {
