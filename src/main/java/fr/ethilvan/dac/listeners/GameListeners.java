@@ -67,6 +67,8 @@ public class GameListeners implements Listener {
 
 				int currentPlayerIndex = dacGame.getCurrentPlayerNames().indexOf(playerName);
 				int nextIndex = currentPlayerIndex + 1;
+
+				// Launch next dac turn
 				if (nextIndex >= dacGame.getCurrentPlayerNames().size()) {
 
 					// Remove eliminated players
@@ -76,13 +78,17 @@ public class GameListeners implements Listener {
 
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
 						this.placePoolPillar(dacGame, region, player, x, z);
+						player.teleport(dacGame.getPlayerLocations().get(player.getName()));
 						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
 					}, 10L);
 					return;
 				}
+
+				// Launch next player's turn
 				String nextPlayerName = dacGame.getCurrentPlayerNames().get(nextIndex);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
 					this.placePoolPillar(dacGame, region, player, x, z);
+					player.teleport(dacGame.getPlayerLocations().get(player.getName()));
 					Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
 				}, 10L);
 			}
@@ -134,8 +140,10 @@ public class GameListeners implements Listener {
 				if (currentPlayerNames.equals(eliminatedPlayerNames) && currentPlayerNames.size() > 1) {
 					// Launch next turn with every eliminated players
 					dacGame.setEliminatedPlayerNames(new ArrayList<>());
-					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> Bukkit.getPluginManager()
-							.callEvent(new DacGameTurnEvent(dacGame)), 10L);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
+						player.teleport(dacGame.getPlayerLocations().get(player.getName()));
+						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
+					}, 10L);
 					return;
 				}
 
@@ -145,8 +153,10 @@ public class GameListeners implements Listener {
 				}
 
 				// Launch next turn without eliminated players
-				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> Bukkit.getPluginManager()
-						.callEvent(new DacGameTurnEvent(dacGame)), 10L);
+				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
+					player.teleport(dacGame.getPlayerLocations().get(player.getName()));
+					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
+				}, 10L);
 				return;
 			}
 

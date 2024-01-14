@@ -55,7 +55,6 @@ public class GamePhaseListeners implements Listener {
 			}
 			Player player = Bukkit.getPlayer(playerName);
 			if (player != null) {
-				player.teleport(e.getDacGame().getPlayerLocations().get(playerName));
 				player.sendMessage(Component.text("It's " + e.getPlayer().getName() + "'s turn.", NamedTextColor.GREEN));
 			}
 		}
