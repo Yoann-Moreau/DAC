@@ -59,6 +59,10 @@ public class DacGame {
 	}
 
 
+	public DAC getDac() {
+		return this.dac;
+	}
+
 	public String getName() {
 		return this.name;
 	}

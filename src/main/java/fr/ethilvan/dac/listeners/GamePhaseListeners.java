@@ -35,6 +35,11 @@ public class GamePhaseListeners implements Listener {
 				player.sendMessage(Component.text("The winner is " + e.getDacGame().getCurrentPlayerNames().get(0),
 						NamedTextColor.GREEN));
 			}
+			e.getDacGame().setStarted(false);
+			e.getDacGame().setPlayerColors(null);
+			e.getDacGame().setPlayerLocations(null);
+			e.getDacGame().setPlayerNames(null);
+			e.getDacGame().getDac().removeGame(e.getDacGame().getName());
 			return;
 		}
 
