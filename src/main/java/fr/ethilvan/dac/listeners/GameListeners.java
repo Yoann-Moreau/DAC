@@ -68,6 +68,12 @@ public class GameListeners implements Listener {
 				int currentPlayerIndex = dacGame.getCurrentPlayerNames().indexOf(playerName);
 				int nextIndex = currentPlayerIndex + 1;
 				if (nextIndex >= dacGame.getCurrentPlayerNames().size()) {
+
+					// Remove eliminated players
+					for (String eliminatedPlayerName : dacGame.getEliminatedPlayerNames()) {
+						dacGame.removeCurrentPlayerName(eliminatedPlayerName);
+					}
+
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
 						this.placePoolPillar(dacGame, region, player, x, z);
 						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
@@ -134,7 +140,7 @@ public class GameListeners implements Listener {
 				}
 
 				// Remove eliminated players
-				for (String playerName : eliminatedPlayerNames) {
+				for (String playerName : dacGame.getEliminatedPlayerNames()) {
 					dacGame.removeCurrentPlayerName(playerName);
 				}
 
