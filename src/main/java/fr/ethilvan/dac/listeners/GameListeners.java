@@ -1,18 +1,13 @@
 package fr.ethilvan.dac.listeners;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.util.Location;
-import com.sk89q.worldedit.world.World;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.events.DacGameTurnEvent;
 import fr.ethilvan.dac.events.PlayerTurnEvent;
 import fr.ethilvan.dac.game.DacGame;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import fr.ethilvan.dac.tools.RegionManagement;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -54,31 +49,21 @@ public class GameListeners implements Listener {
 				continue;
 			}
 
-			Location wgLocation = BukkitAdapter.adapt(player.getLocation());
-			World wgWorld = BukkitAdapter.adapt(player.getWorld());
-
-			RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-			RegionManager regionsManager = container.get(wgWorld);
-
-			if (regionsManager == null) {
-				player.sendMessage(Component.text("Error when retrieving world regions.", NamedTextColor.RED));
-				return;
-			}
-
-			ProtectedRegion region = regionsManager.getRegion(poolRegionName);
+			Region region = RegionManagement.getExistingRegion(player, poolRegionName);
 
 			if (region == null) {
 				Bukkit.getLogger().severe("Error when retrieving pool region.");
 				return;
 			}
 
-			if (region.contains(wgLocation.getBlockX(), wgLocation.getBlockY(), wgLocation.getBlockZ()) &&
-					!dacGame.isJumpOver()) {
+			BlockVector3 blockVector3 = BukkitAdapter.asBlockVector(player.getLocation());
+
+			if (region.contains(blockVector3) && !dacGame.isJumpOver()) {
 
 				dacGame.setJumpOver(true);
 
-				int x = wgLocation.getBlockX();
-				int z = wgLocation.getBlockZ();
+				int x = blockVector3.getBlockX();
+				int z = blockVector3.getBlockZ();
 
 				int currentPlayerIndex = dacGame.getCurrentPlayerNames().indexOf(playerName);
 				int nextIndex = currentPlayerIndex + 1;
@@ -99,13 +84,12 @@ public class GameListeners implements Listener {
 	}
 
 
-	private void placePoolPillar(DacGame dacGame, ProtectedRegion region, Player player, int x, int z) {
+	private void placePoolPillar(DacGame dacGame, Region region, Player player, int x, int z) {
 		int minY = region.getMinimumPoint().getBlockY();
 		int maxY = region.getMaximumPoint().getBlockY();
 		for (int y = minY; y <= maxY; y++) {
 			player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerColors().get(player.getName()));
 		}
-		dacGame.setJumpOver(false);
 	}
 
 

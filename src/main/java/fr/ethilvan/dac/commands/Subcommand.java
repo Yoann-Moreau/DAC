@@ -21,7 +21,19 @@ public abstract class Subcommand {
 
 	public abstract String getSyntax();
 
+	public abstract String getPermission();
+
 	public abstract void perform(DAC dac, CommandSender commandSender, String[] args);
+
+	public boolean hasPermission(CommandSender commandSender) {
+		if (commandSender.hasPermission(this.getPermission())) {
+			return true;
+		}
+		commandSender.sendMessage(
+				Component.text("You do not have permission to perform this command.", NamedTextColor.RED)
+		);
+		return false;
+	}
 
 	public boolean refillPool(DAC dac, String dacName, Player player) {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);

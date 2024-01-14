@@ -40,7 +40,16 @@ public class JoinCommand extends Subcommand {
 	}
 
 	@Override
+	public String getPermission() {
+		return "dac.join";
+	}
+
+	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
+
+		if (!this.hasPermission(commandSender)) {
+			return;
+		}
 
 		Player player = Bukkit.getPlayer(commandSender.getName());
 		if (player == null) {

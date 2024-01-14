@@ -38,12 +38,14 @@ public class InitCommand extends Subcommand {
 	}
 
 	@Override
+	public String getPermission() {
+		return "dac.init";
+	}
+
+	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
 
-		if (!commandSender.hasPermission("dac.init")) {
-			commandSender.sendMessage(
-					Component.text("You do not have permission to perform this command.", NamedTextColor.RED)
-			);
+		if (!this.hasPermission(commandSender)) {
 			return;
 		}
 

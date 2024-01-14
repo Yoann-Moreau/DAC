@@ -26,7 +26,16 @@ public class PoolCommand extends Subcommand {
 	}
 
 	@Override
+	public String getPermission() {
+		return "dac.setup";
+	}
+
+	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
+
+		if (!this.hasPermission(commandSender)) {
+			return;
+		}
 
 		org.bukkit.entity.Player player = Bukkit.getPlayer(commandSender.getName());
 		if (player == null) {

@@ -37,7 +37,16 @@ public class StopCommand extends Subcommand {
 	}
 
 	@Override
+	public String getPermission() {
+		return "dac.stop";
+	}
+
+	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
+
+		if (!this.hasPermission(commandSender)) {
+			return;
+		}
 
 		Player player = Bukkit.getPlayer(commandSender.getName());
 		if (player == null && args.length < 2) {

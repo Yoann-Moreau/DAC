@@ -41,6 +41,8 @@ public class GamePhaseListeners implements Listener {
 
 	@EventHandler
 	public void onPlayerTurn(PlayerTurnEvent e) {
+		e.getDacGame().setJumpOver(false);
+
 		if (e.getPlayer() == null) {
 			return;
 		}
@@ -54,7 +56,7 @@ public class GamePhaseListeners implements Listener {
 			Player player = Bukkit.getPlayer(playerName);
 			if (player != null) {
 				player.teleport(e.getDacGame().getPlayerLocations().get(playerName));
-				player.sendMessage(Component.text("It's " + playerName + "'s turn.", NamedTextColor.GREEN));
+				player.sendMessage(Component.text("It's " + e.getPlayer().getName() + "'s turn.", NamedTextColor.GREEN));
 			}
 		}
 
