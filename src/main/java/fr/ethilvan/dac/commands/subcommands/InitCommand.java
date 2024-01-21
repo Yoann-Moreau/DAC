@@ -12,6 +12,7 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -19,6 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public class InitCommand extends Subcommand {
@@ -86,7 +88,7 @@ public class InitCommand extends Subcommand {
 
 			for (ProtectedRegion item : set) {
 				if (item.equals(region)) {
-					createDacGame(dac, player, dacName);
+					createDacGame(dac, player, dacName, region);
 					return;
 				}
 			}
@@ -96,14 +98,17 @@ public class InitCommand extends Subcommand {
 	}
 
 
-	private void createDacGame(DAC dac, Player player, String dacName) {
+	private void createDacGame(DAC dac, Player player, String dacName, ProtectedRegion region) {
 		if (dac.getGames().containsKey(dacName)) {
 			player.sendMessage(Component.text("A DAC game already exists in this region.", NamedTextColor.RED));
 			return;
 		}
 
 		dac.addGame(dacName, new DacGame(dac, dacName));
-		player.sendMessage(Component.text("A DAC game has been created in the " + dacName + " region.",
-				NamedTextColor.GREEN));
+		ArrayList<Player> playersInRegion = RegionManagement.getPlayersInWGRegion(player.getWorld(), region);
+		for (Player playerInRegion : playersInRegion) {
+			playerInRegion.sendMessage(Component.text("A DAC game has been created in the " + dacName + " region.",
+					NamedTextColor.GREEN));
+		}
 	}
 }

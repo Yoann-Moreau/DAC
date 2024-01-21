@@ -5,6 +5,7 @@ import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.entity.Player;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
@@ -23,7 +24,11 @@ import com.sk89q.worldguard.protection.util.WorldEditRegionConverter;
 import fr.ethilvan.dac.DAC;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+
+import java.util.ArrayList;
 
 public class RegionManagement {
 
@@ -126,5 +131,29 @@ public class RegionManagement {
 		if (protectedRegion != null && passThrough) {
 			protectedRegion.setFlag(Flags.PASSTHROUGH, StateFlag.State.ALLOW);
 		}
+	}
+
+
+	public static ArrayList<org.bukkit.entity.Player> getPlayersInWGRegion(org.bukkit.World world, ProtectedRegion region) {
+		ArrayList<org.bukkit.entity.Player> players = new ArrayList<>();
+
+		for (org.bukkit.entity.Player player : Bukkit.getOnlinePlayers()) {
+
+			// Skip if player is on another world
+			if (!world.getName().equals(player.getWorld().getName())) {
+				continue;
+			}
+
+			Location playerLocation = player.getLocation();
+			// Skip if player not in region
+			if (!region.contains(BlockVector3.at(playerLocation.getBlockX(), playerLocation.getBlockY(),
+					playerLocation.getBlockZ()))) {
+				continue;
+			}
+
+			players.add(player);
+		}
+
+		return players;
 	}
 }
