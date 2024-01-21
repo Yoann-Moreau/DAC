@@ -36,7 +36,7 @@ public class GamePhaseListeners implements Listener {
 						NamedTextColor.GREEN));
 			}
 			e.getDacGame().setStarted(false);
-			e.getDacGame().setPlayerColors(null);
+			e.getDacGame().setPlayerMaterials(null);
 			e.getDacGame().setPlayerLocations(null);
 			e.getDacGame().setPlayerNames(null);
 			e.getDacGame().getDac().removeGame(e.getDacGame().getName());

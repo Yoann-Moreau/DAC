@@ -13,6 +13,7 @@ import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
 import fr.ethilvan.dac.game.DacGame;
 import fr.ethilvan.dac.tools.Colors;
+import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -21,6 +22,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public class JoinCommand extends Subcommand {
@@ -120,15 +122,53 @@ public class JoinCommand extends Subcommand {
 		}
 
 		DacGame dacGame = dac.getGames().get(dacName);
-		if (dacGame.getPlayerColors().containsKey(player.getName())) {
+		if (dacGame.getPlayerMaterials().containsKey(player.getName())) {
 			player.sendMessage(Component.text("You have already joined a game in this region.", NamedTextColor.RED));
 			return;
 		}
 
-		dacGame.addPlayerColor(player.getName(), color);
+		dacGame.addPlayerMaterial(player.getName(), color);
 		dacGame.addPlayerLocation(player.getName(), player.getLocation());
 		dacGame.addPlayerName(player.getName());
 		player.sendMessage(Component.text("You have joined the DAC game in the " + dacName + " region.",
 				NamedTextColor.GREEN));
+
+		World wgWorld = BukkitAdapter.adapt(player.getWorld());
+
+		RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+		RegionManager regionsManager = container.get(wgWorld);
+
+		if (regionsManager == null) {
+			player.sendMessage(Component.text("Error when retrieving world regions.", NamedTextColor.RED));
+			return;
+		}
+
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
+		if (config == null) {
+			player.sendMessage(Component.text("The base region for " + dacName + " does not exist.",
+					NamedTextColor.RED));
+			return;
+		}
+
+		String baseRegionName = config.getString("base");
+
+		if (baseRegionName == null) {
+			player.sendMessage(Component.text("The base region for " + dacName + " does not exist.",
+					NamedTextColor.RED));
+			return;
+		}
+
+		ProtectedRegion region = regionsManager.getRegion(baseRegionName);
+
+		ArrayList<Player> playersInRegion = RegionManagement.getPlayersInWGRegion(player.getWorld(), region);
+		for (Player playerInRegion : playersInRegion) {
+			if (playerInRegion.getName().equals(player.getName())) {
+				continue;
+			}
+			MiniMessage mm = MiniMessage.miniMessage();
+			Component parsed = mm.deserialize("<color:green>" + player.getName() + " has joined the DAC game in the " +
+					dacName + " region with the color <color:" + color.toLowerCase() + ">" + color + "<color:green>.");
+			playerInRegion.sendMessage(parsed);
+		}
 	}
 }

@@ -20,7 +20,7 @@ public class DacGame {
 
 	private final String name;
 
-	private HashMap<String, Material> playerColors;
+	private HashMap<String, Material> playerMaterials;
 	private HashMap<String, Location> playerLocations;
 	private ArrayList<String> playerNames;
 	private ArrayList<String> currentPlayerNames;
@@ -38,7 +38,7 @@ public class DacGame {
 	public DacGame(DAC dac, String dacName) {
 		this.dac = dac;
 		this.name = dacName;
-		this.playerColors = new HashMap<>();
+		this.playerMaterials = new HashMap<>();
 		this.playerLocations = new HashMap<>();
 		this.playerNames = new ArrayList<>();
 		this.currentPlayerNames = new ArrayList<>();
@@ -70,22 +70,22 @@ public class DacGame {
 	}
 
 
-	public HashMap<String, Material> getPlayerColors() {
-		return this.playerColors;
+	public HashMap<String, Material> getPlayerMaterials() {
+		return this.playerMaterials;
 	}
 
-	public void setPlayerColors(HashMap<String, Material> playerColors) {
-		this.playerColors = playerColors;
+	public void setPlayerMaterials(HashMap<String, Material> playerMaterials) {
+		this.playerMaterials = playerMaterials;
 	}
 
-	public void addPlayerColor(String playerName, String color) {
-		if (!this.playerColors.containsKey(playerName)) {
-			this.playerColors.put(playerName, Colors.convertColorToMaterial(color));
+	public void addPlayerMaterial(String playerName, String color) {
+		if (!this.playerMaterials.containsKey(playerName)) {
+			this.playerMaterials.put(playerName, Colors.convertColorToMaterial(color));
 		}
 	}
 
-	public void removePlayerColor(String playerName) {
-		this.playerColors.remove(playerName);
+	public void removePlayerMaterial(String playerName) {
+		this.playerMaterials.remove(playerName);
 	}
 
 

@@ -112,11 +112,11 @@ public class GameListeners implements Listener {
 					player.getWorld().getBlockAt(x, y, z).setType(Material.GLASS);
 				}
 				else {
-					player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerColors().get(player.getName()));
+					player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerMaterials().get(player.getName()));
 				}
 			}
 			else {
-				player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerColors().get(player.getName()));
+				player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerMaterials().get(player.getName()));
 			}
 		}
 	}
