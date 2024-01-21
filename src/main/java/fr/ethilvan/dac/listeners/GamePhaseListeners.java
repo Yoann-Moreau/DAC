@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
+
 public class GamePhaseListeners implements Listener {
 
 	@EventHandler
@@ -20,6 +22,9 @@ public class GamePhaseListeners implements Listener {
 
 	@EventHandler
 	public void onDacGameTurn(DacGameTurnEvent e) {
+		// Reset list of eliminated players
+		e.getDacGame().setEliminatedPlayerNames(new ArrayList<>());
+
 		// End game if no players left
 		if (e.getDacGame().getCurrentPlayerNames().isEmpty()) {
 			return;
