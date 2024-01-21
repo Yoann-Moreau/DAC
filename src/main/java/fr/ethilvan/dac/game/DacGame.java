@@ -2,10 +2,12 @@ package fr.ethilvan.dac.game;
 
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.tools.Colors;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -196,5 +198,30 @@ public class DacGame {
 
 	public Location getDivingLocation() {
 		return divingLocation;
+	}
+
+
+	public void messageAllPlayers(TextComponent text) {
+		for (String playerName : this.getPlayerNames()) {
+			Player playerInLoop = Bukkit.getPlayer(playerName);
+			if (playerInLoop == null) {
+				continue;
+			}
+			playerInLoop.sendMessage(text);
+		}
+	}
+
+
+	public void  messageAllButOnePlayer(Player player, TextComponent text) {
+		for (String playerName : this.getPlayerNames()) {
+			if (player.getName().equals(playerName)) {
+				continue;
+			}
+			Player playerInLoop = Bukkit.getPlayer(playerName);
+			if (playerInLoop == null) {
+				continue;
+			}
+			playerInLoop.sendMessage(text);
+		}
 	}
 }

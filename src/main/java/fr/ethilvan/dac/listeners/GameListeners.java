@@ -149,25 +149,33 @@ public class GameListeners implements Listener {
 			dacGame.addEliminatedPlayerName(currentPlayerName);
 
 			player.sendMessage(Component.text("You have been eliminated.", NamedTextColor.RED));
+			dacGame.messageAllButOnePlayer(player,
+					Component.text(player.getName() + " has been eliminated.", NamedTextColor.WHITE)
+			);
 
 			int currentPlayerIndex = dacGame.getCurrentPlayerNames().indexOf(currentPlayerName);
 			int nextIndex = currentPlayerIndex + 1;
 
 			if (nextIndex >= dacGame.getCurrentPlayerNames().size()) {
+
+				if (dacGame.getPlayerNames().size() == 1) {
+					dacGame.setEliminatedPlayerNames(new ArrayList<>());
+					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
+						player.teleport(dacGame.getPlayerLocations().get(player.getName()));
+						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
+					}, 10L);
+					return;
+				}
+
 				ArrayList<String> currentPlayerNames = dacGame.getCurrentPlayerNames();
 				ArrayList<String> eliminatedPlayerNames = dacGame.getEliminatedPlayerNames();
-				if (currentPlayerNames.equals(eliminatedPlayerNames) && currentPlayerNames.size() > 1) {
 
-					for (String playerName : dacGame.getPlayerNames()) {
-						Player playerInLoop = Bukkit.getPlayer(playerName);
-						if (playerInLoop == null) {
-							continue;
-						}
-						playerInLoop.sendMessage(
-								Component.text("All remaining players have been eliminated this turn, let's try again.",
-										NamedTextColor.GREEN)
-						);
-					}
+				if (currentPlayerNames.size() == eliminatedPlayerNames.size() && currentPlayerNames.size() > 1) {
+
+					dacGame.messageAllPlayers(
+							Component.text("All remaining players have been eliminated this turn, let's try again.",
+							NamedTextColor.GREEN)
+					);
 
 					// Launch next turn with every eliminated players
 					dacGame.setEliminatedPlayerNames(new ArrayList<>());
