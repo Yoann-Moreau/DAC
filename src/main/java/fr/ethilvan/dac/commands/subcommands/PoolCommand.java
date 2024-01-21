@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class PoolCommand extends Subcommand {
 	@Override
@@ -49,8 +50,20 @@ public class PoolCommand extends Subcommand {
 		}
 
 		String regionName = args[1];
-		if (RegionManagement.getExistingRegion(player, "dac_base_" + regionName) == null) {
-			player.sendMessage(Component.text("You must first use 'dac define'", NamedTextColor.RED));
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + regionName);
+		if (config == null) {
+			player.sendMessage(Component.text("You must first use 'dac define'.", NamedTextColor.RED));
+			return;
+		}
+
+		String baseRegionName = config.getString("base");
+		if (baseRegionName == null) {
+			player.sendMessage(Component.text("You must first use 'dac define'.", NamedTextColor.RED));
+			return;
+		}
+
+		if (RegionManagement.getExistingRegion(player, baseRegionName) == null) {
+			player.sendMessage(Component.text("You must first use 'dac define'.", NamedTextColor.RED));
 			return;
 		}
 
