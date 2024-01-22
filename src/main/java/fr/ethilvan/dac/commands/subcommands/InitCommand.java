@@ -111,4 +111,10 @@ public class InitCommand extends Subcommand {
 					NamedTextColor.GREEN));
 		}
 	}
+
+
+	@Override
+	public ArrayList<String> getAutoCompleteChoices() {
+		return null;
+	}
 }

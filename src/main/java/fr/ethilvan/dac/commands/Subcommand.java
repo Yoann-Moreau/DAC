@@ -14,6 +14,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+
 public abstract class Subcommand {
 	public abstract String getName();
 
@@ -24,6 +26,8 @@ public abstract class Subcommand {
 	public abstract String getPermission();
 
 	public abstract void perform(DAC dac, CommandSender commandSender, String[] args);
+
+	public abstract ArrayList<String> getAutoCompleteChoices();
 
 	public boolean hasPermission(CommandSender commandSender) {
 		if (commandSender.hasPermission(this.getPermission())) {

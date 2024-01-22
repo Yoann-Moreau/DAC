@@ -18,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public class StopCommand extends Subcommand {
@@ -182,5 +183,11 @@ public class StopCommand extends Subcommand {
 		dac.removeGame(dacName);
 
 		return true;
+	}
+
+
+	@Override
+	public ArrayList<String> getAutoCompleteChoices() {
+		return null;
 	}
 }

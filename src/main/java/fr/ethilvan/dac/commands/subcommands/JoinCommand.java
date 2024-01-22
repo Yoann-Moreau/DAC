@@ -177,4 +177,10 @@ public class JoinCommand extends Subcommand {
 			playerInRegion.sendMessage(parsed);
 		}
 	}
+
+
+	@Override
+	public ArrayList<String> getAutoCompleteChoices() {
+		return new ArrayList<>(Colors.getAvailableColors());
+	}
 }

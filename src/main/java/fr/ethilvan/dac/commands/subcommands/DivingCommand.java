@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DivingCommand extends Subcommand {
@@ -73,5 +74,11 @@ public class DivingCommand extends Subcommand {
 		section.set("world", player.getWorld().getName());
 
 		dac.saveConfig();
+	}
+
+
+	@Override
+	public ArrayList<String> getAutoCompleteChoices() {
+		return null;
 	}
 }

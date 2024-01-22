@@ -10,6 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.ArrayList;
+
 public class PoolCommand extends Subcommand {
 	@Override
 	public String getName() {
@@ -73,5 +75,11 @@ public class PoolCommand extends Subcommand {
 		}
 
 		RegionManagement.saveRegionToConfig(dac, player, args[1], region, "pool");
+	}
+
+
+	@Override
+	public ArrayList<String> getAutoCompleteChoices() {
+		return null;
 	}
 }

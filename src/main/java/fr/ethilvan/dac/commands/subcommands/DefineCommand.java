@@ -9,6 +9,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+
 public class DefineCommand extends Subcommand {
 	@Override
 	public String getName() {
@@ -54,5 +56,11 @@ public class DefineCommand extends Subcommand {
 		}
 
 		RegionManagement.saveRegionToConfig(dac, player, args[1], region, "base", true);
+	}
+
+
+	@Override
+	public ArrayList<String> getAutoCompleteChoices() {
+		return null;
 	}
 }

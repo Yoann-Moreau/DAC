@@ -138,4 +138,10 @@ public class StartCommand extends Subcommand {
 		dacGame.setStarted(true);
 		Bukkit.getPluginManager().callEvent(new GameStartEvent(dacGame));
 	}
+
+
+	@Override
+	public ArrayList<String> getAutoCompleteChoices() {
+		return null;
+	}
 }

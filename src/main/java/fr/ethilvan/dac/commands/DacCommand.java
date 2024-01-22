@@ -74,10 +74,19 @@ public class DacCommand implements TabExecutor {
 			ArrayList<String> subcommandNames = new ArrayList<>();
 
 			for (int i = 0; i < getSubcommands().size(); i++) {
-				subcommandNames.add(getSubcommands().get(i).getName());
+				if (getSubcommands().get(i).hasPermission(commandSender)) {
+					subcommandNames.add(getSubcommands().get(i).getName());
+				}
 			}
 
 			return subcommandNames;
+		}
+		else if (args.length == 2) {
+			for (int i = 0; i < getSubcommands().size(); i++) {
+				if (getSubcommands().get(i).getName().equals(args[0])) {
+					return getSubcommands().get(i).getAutoCompleteChoices();
+				}
+			}
 		}
 
 		return new ArrayList<>();
