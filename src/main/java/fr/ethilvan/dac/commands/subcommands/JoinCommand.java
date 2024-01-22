@@ -127,6 +127,11 @@ public class JoinCommand extends Subcommand {
 			return;
 		}
 
+		if (dacGame.getPlayerMaterials().containsValue(Colors.convertColorToMaterial(color))) {
+			player.sendMessage(Component.text("A player has already joined with this color", NamedTextColor.RED));
+			return;
+		}
+
 		dacGame.addPlayerMaterial(player.getName(), color);
 		dacGame.addPlayerLocation(player.getName(), player.getLocation());
 		dacGame.addPlayerName(player.getName());
