@@ -167,7 +167,8 @@ public class JoinCommand extends Subcommand {
 			}
 			MiniMessage mm = MiniMessage.miniMessage();
 			Component parsed = mm.deserialize("<color:green>" + player.getName() + " has joined the DAC game in the " +
-					dacName + " region with the color <color:" + color.toLowerCase() + ">" + color + "<color:green>.");
+					dacName + " region with the color <color:" + color.toLowerCase() + ">" + color.toUpperCase() +
+					"<color:green>.");
 			playerInRegion.sendMessage(parsed);
 		}
 	}

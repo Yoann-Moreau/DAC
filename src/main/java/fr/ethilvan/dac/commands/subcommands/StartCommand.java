@@ -121,6 +121,7 @@ public class StartCommand extends Subcommand {
 				dacGame.removePlayerMaterial(playerName);
 				dacGame.removePlayerLocation(playerName);
 				dacGame.removePlayerName(playerName);
+				dacGame.removeCurrentPlayerName(playerName);
 				continue;
 			}
 

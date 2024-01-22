@@ -172,17 +172,13 @@ public class StopCommand extends Subcommand {
 			return false;
 		}
 
-		for (String playerName : dacGame.getPlayerNames()) {
-			Player playerInLoop = Bukkit.getPlayer(playerName);
-			if (playerInLoop != null) {
-				playerInLoop.sendMessage(Component.text("The DAC game has been stopped", NamedTextColor.RED));
-			}
-		}
+		dacGame.messageAllButOnePlayer(player, Component.text("The DAC game has been stopped", NamedTextColor.RED));
 
 		dacGame.setStarted(false);
 		dacGame.setPlayerMaterials(null);
 		dacGame.setPlayerLocations(null);
 		dacGame.setPlayerNames(null);
+		dacGame.setCurrentPlayerNames(null);
 		dac.removeGame(dacName);
 
 		return true;
