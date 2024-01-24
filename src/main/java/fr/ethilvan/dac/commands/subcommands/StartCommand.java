@@ -13,6 +13,7 @@ import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
 import fr.ethilvan.dac.events.GameStartEvent;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.tools.PoolManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -128,7 +129,7 @@ public class StartCommand extends Subcommand {
 			playerInLoop.sendMessage(Component.text("The DAC game has started", NamedTextColor.GREEN));
 		}
 
-		if (!this.refillPool(dac, dacName, player)) {
+		if (!PoolManagement.refillPool(dac, dacName, player)) {
 			return;
 		}
 

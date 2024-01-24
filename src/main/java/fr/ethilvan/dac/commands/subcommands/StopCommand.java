@@ -11,6 +11,7 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.tools.PoolManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -169,7 +170,7 @@ public class StopCommand extends Subcommand {
 
 	private boolean resetAndStopGame(DAC dac, DacGame dacGame, String dacName, Player player) {
 
-		if (!this.refillPool(dac, dacName, player)) {
+		if (!PoolManagement.refillPool(dac, dacName, player)) {
 			return false;
 		}
 

@@ -1,0 +1,86 @@
+package fr.ethilvan.dac.tools;
+
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
+import fr.ethilvan.dac.DAC;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
+public class PoolManagement {
+
+	public static boolean refillPool(DAC dac, String dacName, Player player) {
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
+		if (config == null) {
+			player.sendMessage(Component.text("Error while retrieving DAC regions", NamedTextColor.RED));
+			return false;
+		}
+		String poolRegionName = config.getString("pool");
+
+		Region region = RegionManagement.getExistingRegion(player, poolRegionName);
+		if (region == null) {
+			return false;
+		}
+
+		String worldName = config.getString("world");
+		if (worldName == null) {
+			player.sendMessage(Component.text("Error while retrieving world name", NamedTextColor.RED));
+			return false;
+		}
+		World world = Bukkit.getWorld(worldName);
+
+		if (world == null) {
+			player.sendMessage(Component.text("Error while retrieving world.", NamedTextColor.RED));
+			return false;
+		}
+
+		for (BlockVector3 blockVector3 : region) {
+			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
+			block.setType(Material.WATER);
+		}
+
+		return true;
+	}
+
+
+	public static String grid(DAC dac, String dacName) {
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
+		if (config == null) {
+			return "Error while retrieving DAC regions.";
+		}
+
+		String poolRegionName = config.getString("pool");
+		String worldName = config.getString("world");
+		if (worldName == null) {
+			return "Error while retrieving world name";
+		}
+
+		Region region = RegionManagement.getExistingRegion(worldName, poolRegionName);
+		if (region == null) {
+			return "Error while retrieving pool region.";
+		}
+
+		World world = Bukkit.getWorld(worldName);
+		if (world == null) {
+			return "Error while retrieving world.";
+		}
+
+		for (BlockVector3 blockVector3 : region) {
+			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
+			if ((blockVector3.getBlockX() % 2 == 0 && blockVector3.getBlockZ() % 2 != 0) ||
+					(blockVector3.getBlockX() % 2 != 0 && blockVector3.getBlockZ() % 2 == 0)) {
+				block.setType(Material.WATER);
+			}
+			else {
+				block.setType(Material.OBSIDIAN);
+			}
+		}
+
+		return null;
+	}
+}

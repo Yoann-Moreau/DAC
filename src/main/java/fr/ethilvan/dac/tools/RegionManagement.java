@@ -29,6 +29,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class RegionManagement {
 
@@ -60,6 +61,22 @@ public class RegionManagement {
 			player.sendMessage(Component.text("Error when retrieving world regions.", NamedTextColor.RED));
 			return null;
 		}
+		ProtectedRegion protectedRegion = regionsManager.getRegion(regionName);
+		return WorldEditRegionConverter.convertToRegion(protectedRegion);
+	}
+
+	public static Region getExistingRegion(String worldName, String regionName) {
+		RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+		org.bukkit.World world = Bukkit.getWorld(worldName);
+		if (world == null) {
+			return null;
+		}
+
+		RegionManager regionsManager = container.get(BukkitAdapter.adapt(world));
+		if (regionsManager == null) {
+			return null;
+		}
+
 		ProtectedRegion protectedRegion = regionsManager.getRegion(regionName);
 		return WorldEditRegionConverter.convertToRegion(protectedRegion);
 	}
@@ -155,5 +172,46 @@ public class RegionManagement {
 		}
 
 		return players;
+	}
+
+
+	public static String getDacNameByPlayer(DAC dac, org.bukkit.entity.Player player) {
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
+		if (config == null) {
+			player.sendMessage(Component.text("Error while retrieving DAC regions.", NamedTextColor.RED));
+			return null;
+		}
+
+		RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+		RegionManager regionsManager = container.get(BukkitAdapter.adapt(player.getWorld()));
+
+		if (regionsManager == null) {
+			player.sendMessage(Component.text("Error when retrieving world regions.", NamedTextColor.RED));
+			return null;
+		}
+
+		Location playerLocation = player.getLocation();
+
+		Set<String> dacNames = config.getKeys(false);
+		for (String dacName : dacNames) {
+			String baseRegionName = config.getString(dacName + ".base");
+			if (baseRegionName == null) {
+				continue;
+			}
+
+			ProtectedRegion wgRegion = regionsManager.getRegion(baseRegionName);
+			if (wgRegion == null) {
+				continue;
+			}
+
+			if (!wgRegion.contains(playerLocation.getBlockX(), playerLocation.getBlockY(), playerLocation.getBlockZ())) {
+				continue;
+			}
+
+			return dacName;
+		}
+
+		player.sendMessage(Component.text("You are not a DAC region.", NamedTextColor.RED));
+		return null;
 	}
 }
