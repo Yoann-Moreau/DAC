@@ -12,6 +12,8 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.Random;
+
 public class PoolManagement {
 
 	public static boolean refillPool(DAC dac, String dacName, Player player) {
@@ -79,6 +81,53 @@ public class PoolManagement {
 			else {
 				block.setType(Material.OBSIDIAN);
 			}
+		}
+
+		return null;
+	}
+
+
+	public static String dac(DAC dac, String dacName) {
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
+		if (config == null) {
+			return "Error while retrieving DAC regions.";
+		}
+
+		String poolRegionName = config.getString("pool");
+		String worldName = config.getString("world");
+		if (worldName == null) {
+			return "Error while retrieving world name";
+		}
+
+		Region region = RegionManagement.getExistingRegion(worldName, poolRegionName);
+		if (region == null) {
+			return "Error while retrieving pool region.";
+		}
+
+		World world = Bukkit.getWorld(worldName);
+		if (world == null) {
+			return "Error while retrieving world.";
+		}
+
+		Random random = new Random();
+		int randomBlockNumber = random.nextInt((int) region.getVolume());
+
+		int randomBlockX = 0;
+		int randomBlockZ = 0;
+		int i = 0;
+		for (BlockVector3 blockVector3 : region) {
+			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
+			block.setType(Material.OBSIDIAN);
+			if (i == randomBlockNumber) {
+				randomBlockX = blockVector3.getBlockX();
+				randomBlockZ = blockVector3.getBlockZ();
+			}
+			i++;
+		}
+
+		for (int y = region.getMinimumPoint().getBlockY(); y <= region.getMaximumPoint().getBlockY(); y++) {
+			Block block = world.getBlockAt(randomBlockX, y, randomBlockZ);
+			block.setType(Material.WATER);
 		}
 
 		return null;

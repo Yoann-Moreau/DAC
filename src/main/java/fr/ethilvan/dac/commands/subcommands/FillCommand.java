@@ -62,11 +62,20 @@ public class FillCommand extends Subcommand {
 			return;
 		}
 
-		if (pattern.equals("water")) {
-			PoolManagement.refillPool(dac, dacName, player);
-		}
-		else if (pattern.equals("grid")) {
-			PoolManagement.grid(dac, dacName);
+		switch (pattern) {
+			case "water" -> PoolManagement.refillPool(dac, dacName, player);
+			case "grid" -> {
+				String message = PoolManagement.grid(dac, dacName);
+				if (message != null) {
+					player.sendMessage(Component.text(message, NamedTextColor.RED));
+				}
+			}
+			case "dac" -> {
+				String message = PoolManagement.dac(dac, dacName);
+				if (message != null) {
+					player.sendMessage(Component.text(message, NamedTextColor.RED));
+				}
+			}
 		}
 	}
 
@@ -80,6 +89,7 @@ public class FillCommand extends Subcommand {
 		ArrayList<String> patterns = new ArrayList<>();
 		patterns.add("water");
 		patterns.add("grid");
+		patterns.add("dac");
 		return patterns;
 	}
 }
