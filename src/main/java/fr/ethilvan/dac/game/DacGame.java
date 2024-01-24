@@ -1,5 +1,6 @@
 package fr.ethilvan.dac.game;
 
+import com.sk89q.worldedit.math.BlockVector3;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.tools.Colors;
 import net.kyori.adventure.text.TextComponent;
@@ -33,6 +34,10 @@ public class DacGame {
 	private boolean jumpOver;
 
 	private final Location divingLocation;
+
+	private boolean suddenDeath;
+
+	private BlockVector3 suddenDeathDacLocation;
 
 
 	public DacGame(DAC dac, String dacName) {
@@ -200,6 +205,23 @@ public class DacGame {
 		return divingLocation;
 	}
 
+
+	public boolean isSuddenDeath() {
+		return suddenDeath;
+	}
+
+	public void setSuddenDeath(boolean suddenDeath) {
+		this.suddenDeath = suddenDeath;
+	}
+
+
+	public BlockVector3 getSuddenDeathDacLocation() {
+		return suddenDeathDacLocation;
+	}
+
+	public void setSuddenDeathDacLocation(BlockVector3 suddenDeathDacLocation) {
+		this.suddenDeathDacLocation = suddenDeathDacLocation;
+	}
 
 	public void messageAllPlayers(TextComponent text) {
 		for (String playerName : this.getPlayerNames()) {

@@ -7,6 +7,7 @@ import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.events.DacGameTurnEvent;
 import fr.ethilvan.dac.events.PlayerTurnEvent;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.tools.PoolManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -39,9 +40,15 @@ public class GameListeners implements Listener {
 
 		for (String dacName : this.dac.getGames().keySet()) {
 			ConfigurationSection config = this.dac.getConfig().getConfigurationSection("regions." + dacName);
-			assert config != null;
+			if (config == null) {
+				player.sendMessage(Component.text("Error while retrieving DAC regions."));
+				return;
+			}
 			String poolRegionName = config.getString("pool");
-			assert poolRegionName != null;
+			if (poolRegionName == null) {
+				player.sendMessage(Component.text("Error while retrieving pool region name."));
+				return;
+			}
 			DacGame dacGame = this.dac.getGames().get(dacName);
 
 			if (dacGame.getCurrentPlayerName() == null) {
@@ -82,7 +89,8 @@ public class GameListeners implements Listener {
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
 						this.placePoolPillar(dacGame, region, player, x, z);
 						player.teleport(dacGame.getPlayerLocations().get(player.getName()));
-						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
+						boolean poolFilled = PoolManagement.isPoolFilled(player.getWorld(), region);
+						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, poolFilled));
 					}, 10L);
 					return;
 				}
@@ -92,6 +100,11 @@ public class GameListeners implements Listener {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
 					this.placePoolPillar(dacGame, region, player, x, z);
 					player.teleport(dacGame.getPlayerLocations().get(player.getName()));
+					boolean poolFilled = PoolManagement.isPoolFilled(player.getWorld(), region);
+					if (poolFilled) {
+						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, true));
+						return;
+					}
 					Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
 				}, 10L);
 			}
@@ -162,7 +175,7 @@ public class GameListeners implements Listener {
 					dacGame.setEliminatedPlayerNames(new ArrayList<>());
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
 						player.teleport(dacGame.getPlayerLocations().get(player.getName()));
-						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
+						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
 					}, 10L);
 					return;
 				}
@@ -174,14 +187,14 @@ public class GameListeners implements Listener {
 
 					dacGame.messageAllPlayers(
 							Component.text("All remaining players have been eliminated this turn, let's try again.",
-							NamedTextColor.GREEN)
+									NamedTextColor.GREEN)
 					);
 
 					// Launch next turn with every eliminated players
 					dacGame.setEliminatedPlayerNames(new ArrayList<>());
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
 						player.teleport(dacGame.getPlayerLocations().get(player.getName()));
-						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
+						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
 					}, 10L);
 					return;
 				}
@@ -194,7 +207,7 @@ public class GameListeners implements Listener {
 				// Launch next turn without eliminated players
 				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
 					player.teleport(dacGame.getPlayerLocations().get(player.getName()));
-					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame));
+					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
 				}, 10L);
 				return;
 			}

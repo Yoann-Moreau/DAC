@@ -11,9 +11,11 @@ public class DacGameTurnEvent extends Event {
 
 	private final DacGame dacGame;
 
+	private final boolean poolFilled;
 
-	public DacGameTurnEvent(DacGame dacGame) {
+	public DacGameTurnEvent(DacGame dacGame, boolean poolFilled) {
 		this.dacGame = dacGame;
+		this.poolFilled = poolFilled;
 	}
 
 
@@ -29,5 +31,9 @@ public class DacGameTurnEvent extends Event {
 
 	public DacGame getDacGame() {
 		return this.dacGame;
+	}
+
+	public boolean isPoolFilled() {
+		return poolFilled;
 	}
 }

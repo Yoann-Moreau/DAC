@@ -132,4 +132,68 @@ public class PoolManagement {
 
 		return null;
 	}
+
+
+	public static String dac(DAC dac, String dacName, int randomBlockX, int randomBlockZ) {
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
+		if (config == null) {
+			return "Error while retrieving DAC regions.";
+		}
+
+		String poolRegionName = config.getString("pool");
+		String worldName = config.getString("world");
+		if (worldName == null) {
+			return "Error while retrieving world name";
+		}
+
+		Region region = RegionManagement.getExistingRegion(worldName, poolRegionName);
+		if (region == null) {
+			return "Error while retrieving pool region.";
+		}
+
+		World world = Bukkit.getWorld(worldName);
+		if (world == null) {
+			return "Error while retrieving world.";
+		}
+
+		for (BlockVector3 blockVector3 : region) {
+			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
+			block.setType(Material.OBSIDIAN);
+		}
+
+		for (int y = region.getMinimumPoint().getBlockY(); y <= region.getMaximumPoint().getBlockY(); y++) {
+			Block block = world.getBlockAt(randomBlockX, y, randomBlockZ);
+			block.setType(Material.WATER);
+		}
+
+		return null;
+	}
+
+
+	public static BlockVector3 getRandomBlockInPool(Region poolRegion) {
+		Random random = new Random();
+		int randomBlockNumber = random.nextInt((int) poolRegion.getVolume());
+
+		int i = 0;
+		for (BlockVector3 blockVector3 : poolRegion) {
+			if (i == randomBlockNumber) {
+				return blockVector3;
+			}
+			i++;
+		}
+
+		return null;
+	}
+
+
+	public static boolean isPoolFilled(World world, Region poolRegion) {
+		for (BlockVector3 blockVector3 : poolRegion) {
+			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
+			if (block.getType().equals(Material.WATER)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

@@ -1,11 +1,16 @@
 package fr.ethilvan.dac.listeners;
 
+import com.sk89q.worldedit.regions.Region;
+import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.events.DacGameTurnEvent;
 import fr.ethilvan.dac.events.GameStartEvent;
 import fr.ethilvan.dac.events.PlayerTurnEvent;
+import fr.ethilvan.dac.tools.PoolManagement;
+import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -15,7 +20,7 @@ public class GamePhaseListeners implements Listener {
 
 	@EventHandler
 	public void onGameStart(GameStartEvent e) {
-		Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(e.getDacGame()));
+		Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(e.getDacGame(), false));
 	}
 
 
@@ -27,6 +32,37 @@ public class GamePhaseListeners implements Listener {
 		// End game if no players left
 		if (e.getDacGame().getCurrentPlayerNames().isEmpty()) {
 			return;
+		}
+
+		if (e.isPoolFilled()) {
+			if (!e.getDacGame().isSuddenDeath()) {
+				e.getDacGame().messageAllPlayers(Component.text("The pool has been filled! It's time for sudden death!",
+						NamedTextColor.GOLD));
+				e.getDacGame().setSuddenDeath(true);
+			}
+			DAC dac = e.getDacGame().getDac();
+			ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." +
+					e.getDacGame().getName());
+			if (config == null) {
+				Bukkit.getLogger().severe("Error while retrieving DAC regions.");
+				return;
+			}
+			String poolRegionName = config.getString("pool");
+			if (poolRegionName == null) {
+				Bukkit.getLogger().severe("Error while retrieving pool region name.");
+				return;
+			}
+			String worldName = config.getString("world");
+			if (worldName == null) {
+				Bukkit.getLogger().severe("Error while retrieving world name.");
+				return;
+			}
+			Region poolRegion = RegionManagement.getExistingRegion(worldName, poolRegionName);
+			if (poolRegion == null) {
+				Bukkit.getLogger().severe("Error while retrieving pool region.");
+				return;
+			}
+			e.getDacGame().setSuddenDeathDacLocation(PoolManagement.getRandomBlockInPool(poolRegion));
 		}
 
 		if (e.getDacGame().getCurrentPlayerNames().size() == 1 && e.getDacGame().getPlayerNames().size() > 1) {
@@ -57,6 +93,15 @@ public class GamePhaseListeners implements Listener {
 
 		if (e.getPlayer() == null) {
 			return;
+		}
+
+		if (e.getDacGame().isSuddenDeath()) {
+			PoolManagement.dac(
+					e.getDacGame().getDac(),
+					e.getDacGame().getName(),
+					e.getDacGame().getSuddenDeathDacLocation().getBlockX(),
+					e.getDacGame().getSuddenDeathDacLocation().getBlockZ()
+			);
 		}
 
 		e.getDacGame().setCurrentPlayerName(e.getPlayer().getName());
