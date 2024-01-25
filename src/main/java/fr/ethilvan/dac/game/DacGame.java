@@ -49,6 +49,7 @@ public class DacGame {
 		this.eliminatedPlayerNames = new ArrayList<>();
 		this.started = false;
 		this.jumpOver = false;
+		this.suddenDeath = false;
 	}
 
 

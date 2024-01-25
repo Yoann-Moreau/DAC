@@ -101,7 +101,7 @@ public class GameListeners implements Listener {
 					this.placePoolPillar(dacGame, region, player, x, z);
 					player.teleport(dacGame.getPlayerLocations().get(player.getName()));
 					boolean poolFilled = PoolManagement.isPoolFilled(player.getWorld(), region);
-					if (poolFilled) {
+					if (poolFilled && !dacGame.isSuddenDeath()) {
 						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, true));
 						return;
 					}
