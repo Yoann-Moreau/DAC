@@ -129,7 +129,9 @@ public class StartCommand extends Subcommand {
 			playerInLoop.sendMessage(Component.text("The DAC game has started", NamedTextColor.GREEN));
 		}
 
-		if (!PoolManagement.refillPool(dac, dacName, player)) {
+		String message = PoolManagement.water(dac, dacName);
+		if (message != null) {
+			player.sendMessage(Component.text(message, NamedTextColor.RED));
 			return;
 		}
 

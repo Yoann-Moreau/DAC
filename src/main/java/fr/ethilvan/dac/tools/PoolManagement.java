@@ -3,50 +3,47 @@ package fr.ethilvan.dac.tools;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import fr.ethilvan.dac.DAC;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 
 import java.util.Random;
 
 public class PoolManagement {
 
-	public static boolean refillPool(DAC dac, String dacName, Player player) {
+	public static String water(DAC dac, String dacName) {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
-			player.sendMessage(Component.text("Error while retrieving DAC regions", NamedTextColor.RED));
-			return false;
+			return "Error while retrieving DAC regions.";
 		}
 		String poolRegionName = config.getString("pool");
-
-		Region region = RegionManagement.getExistingRegion(player, poolRegionName);
-		if (region == null) {
-			return false;
+		if (poolRegionName == null) {
+			return "Error while retrieving pool region name.";
 		}
 
 		String worldName = config.getString("world");
 		if (worldName == null) {
-			player.sendMessage(Component.text("Error while retrieving world name", NamedTextColor.RED));
-			return false;
+			return "Error while retrieving world name.";
 		}
+
+		Region poolRegion = RegionManagement.getExistingRegion(worldName, poolRegionName);
+		if (poolRegion == null) {
+			return "Error while retrieving pool region.";
+		}
+
 		World world = Bukkit.getWorld(worldName);
-
 		if (world == null) {
-			player.sendMessage(Component.text("Error while retrieving world.", NamedTextColor.RED));
-			return false;
+			return "Error while retrieving world.";
 		}
 
-		for (BlockVector3 blockVector3 : region) {
+		for (BlockVector3 blockVector3 : poolRegion) {
 			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
 			block.setType(Material.WATER);
 		}
 
-		return true;
+		return null;
 	}
 
 

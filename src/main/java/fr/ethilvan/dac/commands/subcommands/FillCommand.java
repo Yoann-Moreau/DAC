@@ -62,20 +62,14 @@ public class FillCommand extends Subcommand {
 			return;
 		}
 
+		String message = null;
 		switch (pattern) {
-			case "water" -> PoolManagement.refillPool(dac, dacName, player);
-			case "grid" -> {
-				String message = PoolManagement.grid(dac, dacName);
-				if (message != null) {
-					player.sendMessage(Component.text(message, NamedTextColor.RED));
-				}
-			}
-			case "dac" -> {
-				String message = PoolManagement.dac(dac, dacName);
-				if (message != null) {
-					player.sendMessage(Component.text(message, NamedTextColor.RED));
-				}
-			}
+			case "water" -> message = PoolManagement.water(dac, dacName);
+			case "grid" -> message = PoolManagement.grid(dac, dacName);
+			case "dac" -> message = PoolManagement.dac(dac, dacName);
+		}
+		if (message != null) {
+			player.sendMessage(Component.text(message, NamedTextColor.RED));
 		}
 	}
 
