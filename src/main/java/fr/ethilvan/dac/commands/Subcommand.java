@@ -18,7 +18,7 @@ public abstract class Subcommand {
 
 	public abstract void perform(DAC dac, CommandSender commandSender, String[] args);
 
-	public abstract ArrayList<String> getAutoCompleteChoices();
+	public abstract ArrayList<String> getAutoCompleteChoices(DAC dac);
 
 	public boolean hasPermission(CommandSender commandSender) {
 		if (commandSender.hasPermission(this.getPermission())) {

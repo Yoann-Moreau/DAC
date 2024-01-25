@@ -80,7 +80,17 @@ public class PoolCommand extends Subcommand {
 
 
 	@Override
-	public ArrayList<String> getAutoCompleteChoices() {
-		return null;
+	public ArrayList<String> getAutoCompleteChoices(DAC dac) {
+		ArrayList<String> dacNames = new ArrayList<>();
+
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
+		if (config == null) {
+			Bukkit.getLogger().warning("Error while retrieving DAC regions.");
+			return dacNames;
+		}
+
+		dacNames.addAll(config.getKeys(false));
+
+		return dacNames;
 	}
 }

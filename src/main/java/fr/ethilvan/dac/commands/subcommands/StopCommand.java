@@ -190,7 +190,7 @@ public class StopCommand extends Subcommand {
 
 
 	@Override
-	public ArrayList<String> getAutoCompleteChoices() {
-		return null;
+	public ArrayList<String> getAutoCompleteChoices(DAC dac) {
+		return new ArrayList<>(dac.getGames().keySet());
 	}
 }

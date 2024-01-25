@@ -71,7 +71,7 @@ public class DefineCommand extends Subcommand {
 
 
 	@Override
-	public ArrayList<String> getAutoCompleteChoices() {
-		return null;
+	public ArrayList<String> getAutoCompleteChoices(DAC dac) {
+		return new ArrayList<>();
 	}
 }

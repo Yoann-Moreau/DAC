@@ -180,7 +180,7 @@ public class JoinCommand extends Subcommand {
 
 
 	@Override
-	public ArrayList<String> getAutoCompleteChoices() {
+	public ArrayList<String> getAutoCompleteChoices(DAC dac) {
 		return new ArrayList<>(Colors.getAvailableColors());
 	}
 }

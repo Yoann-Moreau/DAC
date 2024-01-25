@@ -74,7 +74,7 @@ public class FillCommand extends Subcommand {
 	}
 
 	@Override
-	public ArrayList<String> getAutoCompleteChoices() {
+	public ArrayList<String> getAutoCompleteChoices(DAC dac) {
 		return this.getPatterns();
 	}
 

@@ -85,7 +85,7 @@ public class DacCommand implements TabExecutor {
 		else if (args.length == 2) {
 			for (int i = 0; i < getSubcommands().size(); i++) {
 				if (getSubcommands().get(i).getName().equals(args[0])) {
-					return getSubcommands().get(i).getAutoCompleteChoices();
+					return getSubcommands().get(i).getAutoCompleteChoices(this.dac);
 				}
 			}
 		}
