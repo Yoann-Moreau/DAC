@@ -140,6 +140,8 @@ public class StartCommand extends Subcommand {
 		dacGame.setCurrentPlayerNames(currentPlayers);
 		dacGame.setStarted(true);
 
+		dac.reloadConfig();
+
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
 			player.sendMessage(Component.text("Error while retrieving DAC regions.", NamedTextColor.RED));
