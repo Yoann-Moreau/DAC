@@ -51,21 +51,22 @@ public class PoolCommand extends Subcommand {
 			return;
 		}
 
-		String regionName = args[1];
-		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + regionName);
+		String dacName = args[1];
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
-			player.sendMessage(Component.text("You must first use 'dac define'.", NamedTextColor.RED));
+			player.sendMessage(Component.text("Error while retrieving DAC regions.", NamedTextColor.RED));
 			return;
 		}
 
-		String baseRegionName = config.getString("base");
-		if (baseRegionName == null) {
-			player.sendMessage(Component.text("You must first use 'dac define'.", NamedTextColor.RED));
+		String worldName = config.getString("world");
+		if (worldName == null) {
+			player.sendMessage(Component.text("Error while retrieving world name.", NamedTextColor.RED));
 			return;
 		}
 
-		if (RegionManagement.getExistingRegion(player, baseRegionName) == null) {
-			player.sendMessage(Component.text("You must first use 'dac define'.", NamedTextColor.RED));
+		if (!player.getWorld().getName().equals(worldName)) {
+			player.sendMessage(Component.text("You must be in the same world as the base region.",
+					NamedTextColor.RED));
 			return;
 		}
 
@@ -74,7 +75,7 @@ public class PoolCommand extends Subcommand {
 			return;
 		}
 
-		RegionManagement.saveRegionToConfig(dac, player, args[1], region, "pool");
+		RegionManagement.saveRegionToConfig(dac, player, dacName, region, "pool");
 	}
 
 

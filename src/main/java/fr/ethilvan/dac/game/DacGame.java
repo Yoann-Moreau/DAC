@@ -33,7 +33,7 @@ public class DacGame {
 
 	private boolean jumpOver;
 
-	private final Location divingLocation;
+	private Location divingLocation;
 
 	private boolean suddenDeath;
 
@@ -50,19 +50,6 @@ public class DacGame {
 		this.eliminatedPlayerNames = new ArrayList<>();
 		this.started = false;
 		this.jumpOver = false;
-
-		ConfigurationSection config = this.dac.getConfig().getConfigurationSection("regions." + dacName);
-
-		assert config != null;
-		String worldName = config.getString("world");
-		double x = config.getDouble("diving.x");
-		double y = config.getDouble("diving.y");
-		double z = config.getDouble("diving.z");
-		float yaw = (float) config.getDouble("diving.yaw");
-		float pitch = (float) config.getDouble("diving.pitch");
-
-		assert worldName != null;
-		this.divingLocation = new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
 	}
 
 
@@ -203,6 +190,10 @@ public class DacGame {
 
 	public Location getDivingLocation() {
 		return divingLocation;
+	}
+
+	public void setDivingLocation(Location divingLocation) {
+		this.divingLocation = divingLocation;
 	}
 
 

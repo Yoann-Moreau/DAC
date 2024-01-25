@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 
@@ -55,7 +56,17 @@ public class DefineCommand extends Subcommand {
 			return;
 		}
 
-		RegionManagement.saveRegionToConfig(dac, player, args[1], region, "base", true);
+		String dacName = args[1];
+
+		RegionManagement.saveRegionToConfig(dac, player, dacName, region, "base", true);
+
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
+		if (config == null) {
+			player.sendMessage(Component.text("Error while retrieving DAC regions.", NamedTextColor.RED));
+			return;
+		}
+
+		config.set("world", player.getWorld().getName());
 	}
 
 

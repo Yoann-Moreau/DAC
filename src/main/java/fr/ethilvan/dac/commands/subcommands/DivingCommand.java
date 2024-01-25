@@ -50,16 +50,23 @@ public class DivingCommand extends Subcommand {
 			return;
 		}
 
-		String regionName = args[1];
-		ConfigurationSection regions = dac.getConfig().getConfigurationSection("regions");
+		String dacName = args[1];
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 
-		if (regions == null) {
-			regions = dac.getConfig().createSection("regions");
+		if (config == null) {
+			player.sendMessage(Component.text("Error while retrieving DAC regions.", NamedTextColor.RED));
+			return;
 		}
 
-		ConfigurationSection section = regions.getConfigurationSection(regionName);
-		if (section == null) {
-			player.sendMessage(Component.text("You must first use 'dac define'"));
+		String worldName = config.getString("world");
+		if (worldName == null) {
+			player.sendMessage(Component.text("Error while retrieving world name.", NamedTextColor.RED));
+			return;
+		}
+
+		if (!player.getWorld().getName().equals(worldName)) {
+			player.sendMessage(Component.text("You must be in the same world as the base region.",
+					NamedTextColor.RED));
 			return;
 		}
 
@@ -70,8 +77,7 @@ public class DivingCommand extends Subcommand {
 		pos.put("pitch", player.getLocation().getPitch());
 		pos.put("yaw", player.getLocation().getYaw());
 
-		section.set("diving", pos);
-		section.set("world", player.getWorld().getName());
+		config.set("diving", pos);
 
 		dac.saveConfig();
 	}

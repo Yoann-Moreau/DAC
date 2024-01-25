@@ -139,6 +139,27 @@ public class StartCommand extends Subcommand {
 		ArrayList<String> currentPlayers = new ArrayList<>(dacGame.getPlayerNames());
 		dacGame.setCurrentPlayerNames(currentPlayers);
 		dacGame.setStarted(true);
+
+		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
+		if (config == null) {
+			player.sendMessage(Component.text("Error while retrieving DAC regions.", NamedTextColor.RED));
+			return;
+		}
+
+		String worldName = config.getString("world");
+		if (worldName == null) {
+			player.sendMessage(Component.text("Error while retrieving world name.", NamedTextColor.RED));
+			return;
+		}
+
+		double x = config.getDouble("diving.x");
+		double y = config.getDouble("diving.y");
+		double z = config.getDouble("diving.z");
+		float yaw = (float) config.getDouble("diving.yaw");
+		float pitch = (float) config.getDouble("diving.pitch");
+
+		dacGame.setDivingLocation(new org.bukkit.Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch));
+
 		Bukkit.getPluginManager().callEvent(new GameStartEvent(dacGame));
 	}
 
