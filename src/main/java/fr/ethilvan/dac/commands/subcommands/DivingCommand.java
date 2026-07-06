@@ -41,7 +41,7 @@ public class DivingCommand extends Subcommand {
 
 		org.bukkit.entity.Player player = Bukkit.getPlayer(commandSender.getName());
 		if (player == null) {
-			Bukkit.getLogger().warning("This command must be used by a player.");
+			dac.getLogger().warning("This command must be used by a player.");
 			return;
 		}
 
@@ -89,7 +89,7 @@ public class DivingCommand extends Subcommand {
 
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
 		if (config == null) {
-			Bukkit.getLogger().warning("Error while retrieving DAC regions.");
+			dac.getLogger().warning("Error while retrieving DAC regions.");
 			return dacNames;
 		}
 

@@ -62,7 +62,7 @@ public class GameListeners implements Listener {
 			Region region = RegionManagement.getExistingRegion(player, poolRegionName);
 
 			if (region == null) {
-				Bukkit.getLogger().severe("Error when retrieving pool region.");
+				dac.getLogger().severe("Error when retrieving pool region.");
 				return;
 			}
 
@@ -72,8 +72,8 @@ public class GameListeners implements Listener {
 
 				dacGame.setJumpOver(true);
 
-				int x = blockVector3.getBlockX();
-				int z = blockVector3.getBlockZ();
+				int x = blockVector3.x();
+				int z = blockVector3.z();
 
 				int currentPlayerIndex = dacGame.getCurrentPlayerNames().indexOf(playerName);
 				int nextIndex = currentPlayerIndex + 1;
@@ -113,8 +113,8 @@ public class GameListeners implements Listener {
 
 
 	private void placePoolPillar(DacGame dacGame, Region region, Player player, int x, int z) {
-		int minY = region.getMinimumPoint().getBlockY();
-		int maxY = region.getMaximumPoint().getBlockY();
+		int minY = region.getMinimumPoint().y();
+		int maxY = region.getMaximumPoint().y();
 		for (int y = minY; y <= maxY; y++) {
 
 			if (y == maxY) {

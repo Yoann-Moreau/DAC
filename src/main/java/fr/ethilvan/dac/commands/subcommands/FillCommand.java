@@ -42,7 +42,7 @@ public class FillCommand extends Subcommand {
 
 		Player player = Bukkit.getPlayer(commandSender.getName());
 		if (player == null) {
-			Bukkit.getLogger().warning("This command must be used by a player.");
+			dac.getLogger().warning("This command must be used by a player.");
 			return;
 		}
 

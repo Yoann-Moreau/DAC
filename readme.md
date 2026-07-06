@@ -8,7 +8,7 @@ If a player misses the water, they are eliminated. The other players continue un
 
 ## Dependencies
 
-This plugin requires WorldEdit 7.2.18 or superior and WorldGuard 7.0.9 or superior.
+This plugin requires WorldEdit 7.4.3 or superior and WorldGuard 7.0.16 or superior.
 
 ## Installation
 

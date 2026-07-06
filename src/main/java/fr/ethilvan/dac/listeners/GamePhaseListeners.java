@@ -44,22 +44,22 @@ public class GamePhaseListeners implements Listener {
 			ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." +
 					e.getDacGame().getName());
 			if (config == null) {
-				Bukkit.getLogger().severe("Error while retrieving DAC regions.");
+				dac.getLogger().severe("Error while retrieving DAC regions.");
 				return;
 			}
 			String poolRegionName = config.getString("pool");
 			if (poolRegionName == null) {
-				Bukkit.getLogger().severe("Error while retrieving pool region name.");
+				dac.getLogger().severe("Error while retrieving pool region name.");
 				return;
 			}
 			String worldName = config.getString("world");
 			if (worldName == null) {
-				Bukkit.getLogger().severe("Error while retrieving world name.");
+				dac.getLogger().severe("Error while retrieving world name.");
 				return;
 			}
 			Region poolRegion = RegionManagement.getExistingRegion(worldName, poolRegionName);
 			if (poolRegion == null) {
-				Bukkit.getLogger().severe("Error while retrieving pool region.");
+				dac.getLogger().severe("Error while retrieving pool region.");
 				return;
 			}
 			e.getDacGame().setSuddenDeathDacLocation(PoolManagement.getRandomBlockInPool(poolRegion));
@@ -68,7 +68,7 @@ public class GamePhaseListeners implements Listener {
 		if (e.getDacGame().getCurrentPlayerNames().size() == 1 && e.getDacGame().getPlayerNames().size() > 1) {
 			e.getDacGame().messageAllPlayers(Component.text("The DAC game is over.", NamedTextColor.GREEN));
 			e.getDacGame().messageAllPlayers(Component.text("The winner is " +
-					e.getDacGame().getCurrentPlayerNames().get(0), NamedTextColor.GREEN));
+					e.getDacGame().getCurrentPlayerNames().getFirst(), NamedTextColor.GREEN));
 			e.getDacGame().setStarted(false);
 			e.getDacGame().setPlayerMaterials(null);
 			e.getDacGame().setPlayerLocations(null);
@@ -99,8 +99,8 @@ public class GamePhaseListeners implements Listener {
 			PoolManagement.dac(
 					e.getDacGame().getDac(),
 					e.getDacGame().getName(),
-					e.getDacGame().getSuddenDeathDacLocation().getBlockX(),
-					e.getDacGame().getSuddenDeathDacLocation().getBlockZ()
+					e.getDacGame().getSuddenDeathDacLocation().x(),
+					e.getDacGame().getSuddenDeathDacLocation().z()
 			);
 		}
 

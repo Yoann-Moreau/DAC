@@ -39,7 +39,7 @@ public class PoolManagement {
 		}
 
 		for (BlockVector3 blockVector3 : poolRegion) {
-			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
+			Block block = world.getBlockAt(blockVector3.x(), blockVector3.y(), blockVector3.z());
 			block.setType(Material.WATER);
 		}
 
@@ -70,9 +70,9 @@ public class PoolManagement {
 		}
 
 		for (BlockVector3 blockVector3 : region) {
-			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
-			if ((blockVector3.getBlockX() % 2 == 0 && blockVector3.getBlockZ() % 2 != 0) ||
-					(blockVector3.getBlockX() % 2 != 0 && blockVector3.getBlockZ() % 2 == 0)) {
+			Block block = world.getBlockAt(blockVector3.x(), blockVector3.y(), blockVector3.z());
+			if ((blockVector3.x() % 2 == 0 && blockVector3.z() % 2 != 0) ||
+					(blockVector3.x() % 2 != 0 && blockVector3.z() % 2 == 0)) {
 				block.setType(Material.WATER);
 			}
 			else {
@@ -113,16 +113,16 @@ public class PoolManagement {
 		int randomBlockZ = 0;
 		int i = 0;
 		for (BlockVector3 blockVector3 : region) {
-			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
+			Block block = world.getBlockAt(blockVector3.x(), blockVector3.y(), blockVector3.z());
 			block.setType(Material.OBSIDIAN);
 			if (i == randomBlockNumber) {
-				randomBlockX = blockVector3.getBlockX();
-				randomBlockZ = blockVector3.getBlockZ();
+				randomBlockX = blockVector3.x();
+				randomBlockZ = blockVector3.z();
 			}
 			i++;
 		}
 
-		for (int y = region.getMinimumPoint().getBlockY(); y <= region.getMaximumPoint().getBlockY(); y++) {
+		for (int y = region.getMinimumPoint().y(); y <= region.getMaximumPoint().y(); y++) {
 			Block block = world.getBlockAt(randomBlockX, y, randomBlockZ);
 			block.setType(Material.WATER);
 		}
@@ -154,11 +154,11 @@ public class PoolManagement {
 		}
 
 		for (BlockVector3 blockVector3 : region) {
-			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
+			Block block = world.getBlockAt(blockVector3.x(), blockVector3.y(), blockVector3.z());
 			block.setType(Material.OBSIDIAN);
 		}
 
-		for (int y = region.getMinimumPoint().getBlockY(); y <= region.getMaximumPoint().getBlockY(); y++) {
+		for (int y = region.getMinimumPoint().y(); y <= region.getMaximumPoint().y(); y++) {
 			Block block = world.getBlockAt(randomBlockX, y, randomBlockZ);
 			block.setType(Material.WATER);
 		}
@@ -185,7 +185,7 @@ public class PoolManagement {
 
 	public static boolean isPoolFilled(World world, Region poolRegion) {
 		for (BlockVector3 blockVector3 : poolRegion) {
-			Block block = world.getBlockAt(blockVector3.getBlockX(), blockVector3.getBlockY(), blockVector3.getBlockZ());
+			Block block = world.getBlockAt(blockVector3.x(), blockVector3.y(), blockVector3.z());
 			if (block.getType().equals(Material.WATER)) {
 				return false;
 			}

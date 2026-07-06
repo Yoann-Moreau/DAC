@@ -52,7 +52,7 @@ public class StopCommand extends Subcommand {
 
 		Player player = Bukkit.getPlayer(commandSender.getName());
 		if (player == null && args.length < 2) {
-			Bukkit.getLogger().warning("This command requires a DAC name when not used by a player.");
+			dac.getLogger().warning("This command requires a DAC name when not used by a player.");
 			return;
 		}
 
@@ -64,7 +64,7 @@ public class StopCommand extends Subcommand {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
 		if (config == null) {
 			if (player == null) {
-				Bukkit.getLogger().warning("There are no defined DAC regions.");
+				dac.getLogger().warning("There are no defined DAC regions.");
 				return;
 			}
 			player.sendMessage(Component.text("There are no defined DAC regions.", NamedTextColor.RED));
@@ -84,7 +84,7 @@ public class StopCommand extends Subcommand {
 
 		if (!dac.getGames().containsKey(dacName)) {
 			if (player == null) {
-				Bukkit.getLogger().warning("No DAC games exists in this region.");
+				dac.getLogger().warning("No DAC games exists in this region.");
 				return;
 			}
 			player.sendMessage(Component.text("No DAC games exists in this region.", NamedTextColor.RED));
@@ -94,7 +94,7 @@ public class StopCommand extends Subcommand {
 		DacGame dacGame = dac.getGames().get(dacName);
 		if (!dacGame.isStarted()) {
 			if (player == null) {
-				Bukkit.getLogger().warning("No DAC game has been started in this region.");
+				dac.getLogger().warning("No DAC game has been started in this region.");
 				return;
 			}
 			player.sendMessage(Component.text("No DAC game has been started in this region.", NamedTextColor.RED));
@@ -106,7 +106,7 @@ public class StopCommand extends Subcommand {
 			return;
 		}
 		if (player == null) {
-			Bukkit.getLogger().info("The game in the " + dacName + " region has been stopped.");
+			dac.getLogger().info("The game in the " + dacName + " region has been stopped.");
 			return;
 		}
 		player.sendMessage(Component.text("The game in the " + dacName + " region has been stopped.",

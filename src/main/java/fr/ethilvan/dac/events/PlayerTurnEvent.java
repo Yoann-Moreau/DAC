@@ -13,7 +13,7 @@ public class PlayerTurnEvent extends Event {
 
 	private final DacGame dacGame;
 
-	private Player player;
+	private final Player player;
 
 
 	public PlayerTurnEvent(DacGame dacGame, String playerName) {
