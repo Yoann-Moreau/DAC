@@ -45,16 +45,16 @@ public class DacCommand implements TabExecutor {
 	) {
 
 		if (args.length > 0) {
-			for (int i = 0; i < getSubcommands().size(); i++) {
-				if (args[0].equalsIgnoreCase(getSubcommands().get(i).getName())) {
-					getSubcommands().get(i).perform(dac, commandSender, args);
+			for (Subcommand subcommand : subcommands) {
+				if (args[0].equalsIgnoreCase(subcommand.getName())) {
+					subcommand.perform(dac, commandSender, args);
 				}
 			}
 		} else {
-			commandSender.sendMessage("--------------------------------------------------");
-			for (int i = 0; i < getSubcommands().size(); i++) {
-				commandSender.sendMessage(getSubcommands().get(i).getSyntax() + " - " +
-						getSubcommands().get(i).getDescription());
+			commandSender.sendMessage("-------------------DAC commands-------------------");
+			for (Subcommand subcommand : getSubcommands()) {
+				commandSender.sendRichMessage("<gold>"+ subcommand.getSyntax() + "<gray>: <white>" +
+						subcommand.getDescription());
 			}
 			commandSender.sendMessage("--------------------------------------------------");
 		}
@@ -74,18 +74,18 @@ public class DacCommand implements TabExecutor {
 		if (args.length == 1) {
 			ArrayList<String> subcommandNames = new ArrayList<>();
 
-			for (int i = 0; i < getSubcommands().size(); i++) {
-				if (getSubcommands().get(i).hasPermission(commandSender)) {
-					subcommandNames.add(getSubcommands().get(i).getName());
+			for (Subcommand subcommand : getSubcommands()) {
+				if (subcommand.hasPermission(commandSender)) {
+					subcommandNames.add(subcommand.getName());
 				}
 			}
 
 			return subcommandNames;
 		}
 		else if (args.length == 2) {
-			for (int i = 0; i < getSubcommands().size(); i++) {
-				if (getSubcommands().get(i).getName().equals(args[0])) {
-					return getSubcommands().get(i).getAutoCompleteChoices(this.dac);
+			for (Subcommand subcommand : getSubcommands()) {
+				if (subcommand.getName().equals(args[0])) {
+					return subcommand.getAutoCompleteChoices(this.dac);
 				}
 			}
 		}
