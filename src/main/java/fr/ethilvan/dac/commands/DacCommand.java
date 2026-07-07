@@ -28,6 +28,7 @@ public class DacCommand implements TabExecutor {
 		subcommands.add(new StartCommand());
 		subcommands.add(new StopCommand());
 		subcommands.add(new FillCommand());
+		subcommands.add(new DeleteCommand());
 	}
 
 

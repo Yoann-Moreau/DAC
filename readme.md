@@ -63,5 +63,10 @@ region and fill the pool region with water.
 This command must be executed inside a DAC region saved with "/dac define". It will fill the corresponding pool
 with the provided pattern.
 
-Patterns are "water", "grid" or "dac". Water just fills the pool with water, grid fills the pool with a grid of water
-blocks surrounded by obsidian blocks, and dac fills the pool completely with obsidian blocks except one.
+Patterns are "water", "grid" or "dac". "water" just fills the pool with water, "grid" fills the pool with a grid of 
+water blocks surrounded by obsidian blocks, and "dac" fills the pool completely with obsidian blocks except one.
+
+### /dac delete \<dacName>
+
+This command deletes the DAC with the provided name from the DAC plugin config file and the associated regions in the 
+WorldGuard config.
