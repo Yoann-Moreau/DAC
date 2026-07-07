@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
+import fr.ethilvan.dac.tools.DacManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -115,16 +116,6 @@ public class DeleteCommand extends Subcommand {
 
 	@Override
 	public ArrayList<String> getAutoCompleteChoices(DAC dac) {
-		ArrayList<String> dacNames = new ArrayList<>();
-
-		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
-		if (config == null) {
-			dac.getLogger().warning("Error while retrieving DAC regions.");
-			return dacNames;
-		}
-
-		dacNames.addAll(config.getKeys(false));
-
-		return dacNames;
+		return DacManagement.getDacNames(dac);
 	}
 }

@@ -2,6 +2,7 @@ package fr.ethilvan.dac.commands.subcommands;
 
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
+import fr.ethilvan.dac.tools.DacManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -51,14 +52,14 @@ public class DivingCommand extends Subcommand {
 		}
 
 		String dacName = args[1];
-		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
+		ConfigurationSection configDac = dac.getConfig().getConfigurationSection("regions." + dacName);
 
-		if (config == null) {
+		if (configDac == null) {
 			player.sendMessage(Component.text("Error while retrieving DAC regions.", NamedTextColor.RED));
 			return;
 		}
 
-		String worldName = config.getString("world");
+		String worldName = configDac.getString("world");
 		if (worldName == null) {
 			player.sendMessage(Component.text("Error while retrieving world name.", NamedTextColor.RED));
 			return;
@@ -77,7 +78,7 @@ public class DivingCommand extends Subcommand {
 		pos.put("pitch", player.getLocation().getPitch());
 		pos.put("yaw", player.getLocation().getYaw());
 
-		config.set("diving", pos);
+		configDac.set("diving", pos);
 		dac.saveConfig();
 
 		player.sendMessage(Component.text("Successfully defined DAC diving position.", NamedTextColor.GREEN));
@@ -86,16 +87,6 @@ public class DivingCommand extends Subcommand {
 
 	@Override
 	public ArrayList<String> getAutoCompleteChoices(DAC dac) {
-		ArrayList<String> dacNames = new ArrayList<>();
-
-		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
-		if (config == null) {
-			dac.getLogger().warning("Error while retrieving DAC regions.");
-			return dacNames;
-		}
-
-		dacNames.addAll(config.getKeys(false));
-
-		return dacNames;
+		return DacManagement.getDacNames(dac);
 	}
 }
