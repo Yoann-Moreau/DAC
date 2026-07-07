@@ -78,8 +78,9 @@ public class DivingCommand extends Subcommand {
 		pos.put("yaw", player.getLocation().getYaw());
 
 		config.set("diving", pos);
-
 		dac.saveConfig();
+
+		player.sendMessage(Component.text("Successfully defined DAC diving position.", NamedTextColor.GREEN));
 	}
 
 

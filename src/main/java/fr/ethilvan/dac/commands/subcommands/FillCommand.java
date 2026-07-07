@@ -71,6 +71,8 @@ public class FillCommand extends Subcommand {
 		if (message != null) {
 			player.sendMessage(Component.text(message, NamedTextColor.RED));
 		}
+
+		player.sendMessage(Component.text("Pool successfully filled with the pattern: " + pattern, NamedTextColor.GREEN));
 	}
 
 	@Override

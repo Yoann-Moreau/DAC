@@ -106,6 +106,7 @@ public class JoinCommand extends Subcommand {
 			for (ProtectedRegion item : set) {
 				if (item.equals(region)) {
 					joinDacGame(dac, player, dacName, color);
+					player.sendMessage(Component.text("You have successfully joined the DAC game.", NamedTextColor.GREEN));
 					return;
 				}
 			}

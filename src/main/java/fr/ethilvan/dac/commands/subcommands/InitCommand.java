@@ -89,6 +89,7 @@ public class InitCommand extends Subcommand {
 			for (ProtectedRegion item : set) {
 				if (item.equals(region)) {
 					createDacGame(dac, player, dacName, region);
+					player.sendMessage(Component.text("A new DAC game has been successfully initialized.", NamedTextColor.GREEN));
 					return;
 				}
 			}

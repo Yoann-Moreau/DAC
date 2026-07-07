@@ -76,6 +76,7 @@ public class PoolCommand extends Subcommand {
 		}
 
 		RegionManagement.saveRegionToConfig(dac, player, dacName, region, "pool");
+		player.sendMessage(Component.text("The pool region has successfully been saved.", NamedTextColor.GREEN));
 	}
 
 

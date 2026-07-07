@@ -67,6 +67,9 @@ public class DefineCommand extends Subcommand {
 		}
 
 		config.set("world", player.getWorld().getName());
+		dac.saveConfig();
+
+		player.sendMessage(Component.text("Successfully defined DAC region.", NamedTextColor.GREEN));
 	}
 
 
