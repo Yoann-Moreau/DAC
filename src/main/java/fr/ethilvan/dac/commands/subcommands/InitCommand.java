@@ -70,7 +70,6 @@ public class InitCommand extends Subcommand {
 			return;
 		}
 
-		Location wgLocation = BukkitAdapter.adapt(player.getLocation());
 		World wgWorld = BukkitAdapter.adapt(player.getWorld());
 
 		RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
@@ -81,11 +80,12 @@ public class InitCommand extends Subcommand {
 			return;
 		}
 
-		Set<String> dacNames = config.getKeys(false);
-		for (String dacName : dacNames) {
-			String regionName = (String) config.get(dacName + ".base");
+		Location wgLocation = BukkitAdapter.adapt(player.getLocation());
 
-			if (regionName == null) { // Skip iteration if the base region is not defined
+		Set<String> dacNames = dac.getConfig().getKeys(false);
+		for (String dacName : dacNames) {
+			String regionName = dac.getConfig().getString(dacName + ".base");
+			if (regionName == null || regionName.isEmpty()) { // Skip iteration if the base region is not defined
 				continue;
 			}
 

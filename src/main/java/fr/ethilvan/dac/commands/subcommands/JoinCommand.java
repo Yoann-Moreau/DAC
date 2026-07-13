@@ -189,7 +189,7 @@ public class JoinCommand extends Subcommand {
 		placeholders.put("\\{player-name\\}", player.getName());
 		MiniMessage mm = MiniMessage.miniMessage();
 		String message = MessageManagement.getMessageFromKey(dac, "messages.commands.join.joined");
-		message = replacePlaceholders(message, placeholders);
+		message = MessageManagement.replacePlaceholders(message, placeholders);
 		Component parsed = mm.deserialize(message);
 		for (Player playerInRegion : playersInRegion) {
 			if (playerInRegion.equals(player)) {

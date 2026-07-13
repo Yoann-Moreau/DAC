@@ -88,4 +88,12 @@ public class MessageManagement {
 		}
 		return message;
 	}
+
+
+	public static String replacePlaceholders(String message, HashMap<String, String> placeholders) {
+		for (HashMap.Entry<String, String> entry : placeholders.entrySet()) {
+			message = message.replaceAll(entry.getKey(), entry.getValue());
+		}
+		return message;
+	}
 }

@@ -5,7 +5,6 @@ import fr.ethilvan.dac.tools.MessageManagement;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public abstract class Subcommand {
@@ -37,13 +36,5 @@ public abstract class Subcommand {
 		}
 		MessageManagement.messageToSender(dac, commandSender, "messages.commands.errors.noPermission");
 		return false;
-	}
-
-
-	protected String replacePlaceholders(String message, HashMap<String, String> placeholders) {
-		for (HashMap.Entry<String, String> entry : placeholders.entrySet()) {
-			message = message.replaceAll(entry.getKey(), entry.getValue());
-		}
-		return message;
 	}
 }
