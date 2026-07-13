@@ -22,13 +22,13 @@ public class DacCommand implements TabExecutor {
 		this.dac = dac;
 
 		subcommands.add(new InitCommand(dac));
-		subcommands.add(new DefineCommand(dac));
-		subcommands.add(new PoolCommand(dac));
-		subcommands.add(new DivingCommand(dac));
 		subcommands.add(new JoinCommand(dac));
 		subcommands.add(new StartCommand(dac));
 		subcommands.add(new StopCommand(dac));
 		subcommands.add(new FillCommand(dac));
+		subcommands.add(new DefineCommand(dac));
+		subcommands.add(new PoolCommand(dac));
+		subcommands.add(new DivingCommand(dac));
 		subcommands.add(new DeleteCommand(dac));
 	}
 

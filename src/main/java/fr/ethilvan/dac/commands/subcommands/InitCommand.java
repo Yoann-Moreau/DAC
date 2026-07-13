@@ -38,7 +38,7 @@ public class InitCommand extends Subcommand {
 
 	@Override
 	public String getDescription() {
-		return "Initialize a DAC game";
+		return MessageManagement.getMessageFromKey(dac, "messages.commands.init.description");
 	}
 
 	@Override

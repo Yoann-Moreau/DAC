@@ -13,9 +13,9 @@ import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
 import fr.ethilvan.dac.game.DacGame;
 import fr.ethilvan.dac.tools.Colors;
+import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -23,7 +23,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
+
 
 public class JoinCommand extends Subcommand {
 
@@ -39,7 +41,7 @@ public class JoinCommand extends Subcommand {
 
 	@Override
 	public String getDescription() {
-		return "Joins a DAC game with the specified color";
+		return MessageManagement.getMessageFromKey(dac, "messages.commands.join.description");
 	}
 
 	@Override
@@ -53,20 +55,20 @@ public class JoinCommand extends Subcommand {
 	}
 
 	@Override
-	public void perform(DAC dac, CommandSender commandSender, String[] args) {
+	public void perform(DAC dac, CommandSender sender, String[] args) {
 
-		if (!this.hasPermission(dac, commandSender)) {
+		if (!this.hasPermission(dac, sender)) {
 			return;
 		}
 
-		Player player = Bukkit.getPlayer(commandSender.getName());
+		Player player = Bukkit.getPlayer(sender.getName());
 		if (player == null) {
-			dac.getLogger().warning("This command must be used by a player.");
+			MessageManagement.messageToSender(dac, sender, "messages.commands.errors.notAPlayer");
 			return;
 		}
 
 		if (args.length < 2) {
-			player.sendMessage(Component.text("You must provide a color.", NamedTextColor.RED));
+			MessageManagement.messageToSender(dac, player, "messages.commands.join.noColorProvided");
 			return;
 		}
 
@@ -75,14 +77,16 @@ public class JoinCommand extends Subcommand {
 		if (!Colors.getAvailableColors().contains(color.toUpperCase())) {
 			String colorsString = Colors.getChatColorsListInString();
 			MiniMessage mm = MiniMessage.miniMessage();
-			Component parsed = mm.deserialize("<color:red>The available colors are: " + colorsString);
+			String message = MessageManagement.getMessageFromKey(dac, "messages.commands.join.wrongColorName");
+			message = message.replaceAll("\\{colors}", colorsString);
+			Component parsed = mm.deserialize(message);
 			player.sendMessage(parsed);
 			return;
 		}
 
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
 		if (config == null) {
-			player.sendMessage(Component.text("There are no defined DAC regions.", NamedTextColor.RED));
+			MessageManagement.messageToSender(dac, player, "messages.commands.errors.noDefinedRegions");
 			return;
 		}
 
@@ -93,7 +97,7 @@ public class JoinCommand extends Subcommand {
 		RegionManager regionsManager = container.get(wgWorld);
 
 		if (regionsManager == null) {
-			player.sendMessage(Component.text("Error when retrieving world regions.", NamedTextColor.RED));
+			MessageManagement.messageToSender(dac, player, "messages.commands.errors.regionsRetrieve");
 			return;
 		}
 
@@ -111,78 +115,89 @@ public class JoinCommand extends Subcommand {
 
 			for (ProtectedRegion item : set) {
 				if (item.equals(region)) {
-					joinDacGame(dac, player, dacName, color);
-					player.sendMessage(Component.text("You have successfully joined the DAC game.", NamedTextColor.GREEN));
+					boolean hasErrors = errorsWhileJoiningDacGame(dac, player, dacName, color, regionsManager);
+					if (hasErrors) {
+						return;
+					}
+					HashMap<String, String> placeholders = new HashMap<>();
+					placeholders.put("\\{dac-name\\}", dacName);
+					MessageManagement.messageToSender(dac, player, "messages.commands.join.success", placeholders);
 					return;
 				}
 			}
 		}
 
-		player.sendMessage(Component.text("You are not in a DAC region.", NamedTextColor.RED));
+		MessageManagement.messageToSender(dac, player, "messages.commands.errors.notInRegion");
 	}
 
 
-	private void joinDacGame(DAC dac, Player player, String dacName, String color) {
+	private boolean errorsWhileJoiningDacGame(
+			DAC dac,
+			Player player,
+			String dacName,
+			String color,
+			RegionManager regionsManager
+	) {
 		if (!dac.getGames().containsKey(dacName)) {
-			player.sendMessage(Component.text("No DAC games exists in this region.", NamedTextColor.RED));
-			return;
+			MessageManagement.messageToSender(dac, player, "messages.commands.join.noGameInRegion");
+			return true;
 		}
 
 		DacGame dacGame = dac.getGames().get(dacName);
 		if (dacGame.getPlayerMaterials().containsKey(player.getName())) {
-			player.sendMessage(Component.text("You have already joined a game in this region.", NamedTextColor.RED));
-			return;
+			MessageManagement.messageToSender(dac, player, "messages.commands.join.alreadyJoined");
+			return true;
 		}
 
 		if (dacGame.getPlayerMaterials().containsValue(Colors.convertColorToMaterial(color))) {
-			player.sendMessage(Component.text("A player has already joined with this color", NamedTextColor.RED));
-			return;
+			MessageManagement.messageToSender(dac, player, "messages.commands.join.colorTaken");
+			return true;
 		}
 
 		dacGame.addPlayerMaterial(player.getName(), color);
 		dacGame.addPlayerLocation(player.getName(), player.getLocation());
 		dacGame.addPlayerName(player.getName());
-		player.sendMessage(Component.text("You have joined the DAC game in the " + dacName + " region.",
-				NamedTextColor.GREEN));
-
-		World wgWorld = BukkitAdapter.adapt(player.getWorld());
-
-		RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-		RegionManager regionsManager = container.get(wgWorld);
-
-		if (regionsManager == null) {
-			player.sendMessage(Component.text("Error when retrieving world regions.", NamedTextColor.RED));
-			return;
-		}
 
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
-			player.sendMessage(Component.text("The base region for " + dacName + " does not exist.",
-					NamedTextColor.RED));
-			return;
+			HashMap<String, String> placeholders = new HashMap<>();
+			placeholders.put("\\{dac-name\\}", dacName);
+			MessageManagement.messageToSender(dac, player, "messages.commands.join.noRegions", placeholders);
+			return true;
 		}
 
 		String baseRegionName = config.getString("base");
 
 		if (baseRegionName == null) {
-			player.sendMessage(Component.text("The base region for " + dacName + " does not exist.",
-					NamedTextColor.RED));
-			return;
+			HashMap<String, String> placeholders = new HashMap<>();
+			placeholders.put("\\{dac-name}", dacName);
+			MessageManagement.messageToSender(dac, player, "messages.commands.join.noBaseRegion", placeholders);
+			return true;
 		}
 
 		ProtectedRegion region = regionsManager.getRegion(baseRegionName);
+		if (region == null) {
+			MessageManagement.messageToSender(dac, player, "messages.commands.errors.noWorldGuardRegion");
+			return true;
+		}
 
 		ArrayList<Player> playersInRegion = RegionManagement.getPlayersInWGRegion(player.getWorld(), region);
+		HashMap<String, String> placeholders = new HashMap<>();
+		placeholders.put("\\{dac-name}", dacName);
+		placeholders.put("\\{color}", color.toLowerCase());
+		placeholders.put("\\{color-name}", color.toUpperCase());
+		placeholders.put("\\{player-name\\}", player.getName());
+		MiniMessage mm = MiniMessage.miniMessage();
+		String message = MessageManagement.getMessageFromKey(dac, "messages.commands.join.joined");
+		message = replacePlaceholders(message, placeholders);
+		Component parsed = mm.deserialize(message);
 		for (Player playerInRegion : playersInRegion) {
-			if (playerInRegion.getName().equals(player.getName())) {
+			if (playerInRegion.equals(player)) {
 				continue;
 			}
-			MiniMessage mm = MiniMessage.miniMessage();
-			Component parsed = mm.deserialize("<color:green>" + player.getName() + " has joined the DAC game in the " +
-					dacName + " region with the color <color:" + color.toLowerCase() + ">" + color.toUpperCase() +
-					"<color:green>.");
 			playerInRegion.sendMessage(parsed);
 		}
+		return false;
 	}
 
 

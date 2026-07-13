@@ -14,7 +14,6 @@ public class Colors {
 		colors.add("AQUA");
 		colors.add("BLACK");
 		colors.add("BLUE");
-		colors.add("DARK_AQUA");
 		colors.add("DARK_BLUE");
 		colors.add("DARK_GRAY");
 		colors.add("DARK_GREEN");
@@ -37,7 +36,6 @@ public class Colors {
 			case "AQUA" -> Material.CYAN_WOOL;
 			case "BLACK" -> Material.BLACK_WOOL;
 			case "BLUE" -> Material.LIGHT_BLUE_WOOL;
-			case "DARK_AQUA" -> Material.BROWN_WOOL;
 			case "DARK_BLUE" -> Material.BLUE_WOOL;
 			case "DARK_GRAY" -> Material.GRAY_WOOL;
 			case "DARK_GREEN" -> Material.GREEN_WOOL;
