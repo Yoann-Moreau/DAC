@@ -20,6 +20,11 @@ import java.util.ArrayList;
 
 public class DeleteCommand extends Subcommand {
 
+	public DeleteCommand(DAC dac) {
+		super(dac);
+	}
+
+
 	@Override
 	public String getName() {
 		return "delete";
@@ -47,7 +52,7 @@ public class DeleteCommand extends Subcommand {
 	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
 
-		if (!this.hasPermission(commandSender)) {
+		if (!this.hasPermission(dac, commandSender)) {
 			return;
 		}
 

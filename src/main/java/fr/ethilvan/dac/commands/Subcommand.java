@@ -1,13 +1,22 @@
 package fr.ethilvan.dac.commands;
 
 import fr.ethilvan.dac.DAC;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import fr.ethilvan.dac.tools.MessageManagement;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 
+
 public abstract class Subcommand {
+
+	DAC dac;
+
+
+	public Subcommand(DAC dac) {
+		this.dac = dac;
+	}
+
+
 	public abstract String getName();
 
 	public abstract String getDescription();
@@ -20,13 +29,11 @@ public abstract class Subcommand {
 
 	public abstract ArrayList<String> getAutoCompleteChoices(DAC dac);
 
-	public boolean hasPermission(CommandSender commandSender) {
+	public boolean hasPermission(DAC dac, CommandSender commandSender) {
 		if (commandSender.hasPermission(this.getPermission())) {
 			return true;
 		}
-		commandSender.sendMessage(
-				Component.text("You do not have permission to perform this command.", NamedTextColor.RED)
-		);
+		MessageManagement.messageToSender(dac, commandSender, "messages.commands.errors.noPermission");
 		return false;
 	}
 }

@@ -14,6 +14,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.ArrayList;
 
 public class PoolCommand extends Subcommand {
+
+	public PoolCommand(DAC dac) {
+		super(dac);
+	}
+
+
 	@Override
 	public String getName() {
 		return "pool";
@@ -37,7 +43,7 @@ public class PoolCommand extends Subcommand {
 	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
 
-		if (!this.hasPermission(commandSender)) {
+		if (!this.hasPermission(dac, commandSender)) {
 			return;
 		}
 

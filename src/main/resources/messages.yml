@@ -1,0 +1,13 @@
+messages:
+  commands:
+    errors:
+      notAPlayer: "<red>This command must be performed by a player."
+      noPermission: "<red>You do not permission to perform this command."
+      noDefinedRegions: "<red>There are no defined DAC regions."
+      regionsRetrieve: "<red>Error when retrieving world regions."
+      notInRegion: "<red>You are not in a DAC region."
+    init:
+      description: "Initializes a DAC game. Use before /dac join."
+      success: "<green>A new DAC game has been successfully initialized in this region."
+      newGameCreated: "<green>A DAC game has been created in the <gold>{dac-name}</gold> region."
+      gameAlreadyInProgress: "<red>A DAC game already exists in this region."

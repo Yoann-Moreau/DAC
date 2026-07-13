@@ -13,6 +13,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.ArrayList;
 
 public class DefineCommand extends Subcommand {
+
+	public DefineCommand(DAC dac) {
+		super(dac);
+	}
+
+
 	@Override
 	public String getName() {
 		return "define";
@@ -36,7 +42,7 @@ public class DefineCommand extends Subcommand {
 	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
 
-		if (!this.hasPermission(commandSender)) {
+		if (!this.hasPermission(dac, commandSender)) {
 			return;
 		}
 

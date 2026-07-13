@@ -13,6 +13,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DivingCommand extends Subcommand {
+
+
+	public DivingCommand(DAC dac) {
+		super(dac);
+	}
+
+
 	@Override
 	public String getName() {
 		return "diving";
@@ -36,7 +43,7 @@ public class DivingCommand extends Subcommand {
 	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
 
-		if (!this.hasPermission(commandSender)) {
+		if (!this.hasPermission(dac, commandSender)) {
 			return;
 		}
 

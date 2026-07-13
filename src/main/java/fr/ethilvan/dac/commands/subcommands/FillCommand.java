@@ -13,6 +13,12 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 
 public class FillCommand extends Subcommand {
+
+	public FillCommand(DAC dac) {
+		super(dac);
+	}
+
+
 	@Override
 	public String getName() {
 		return "fill";
@@ -36,7 +42,7 @@ public class FillCommand extends Subcommand {
 	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
 
-		if (!this.hasPermission(commandSender)) {
+		if (!this.hasPermission(dac, commandSender)) {
 			return;
 		}
 

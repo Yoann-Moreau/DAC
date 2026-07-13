@@ -12,18 +12,25 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 
+
 public class InitCommand extends Subcommand {
+
+	public InitCommand(DAC dac) {
+		super(dac);
+	}
+
+
 	@Override
 	public String getName() {
 		return "init";
@@ -45,21 +52,21 @@ public class InitCommand extends Subcommand {
 	}
 
 	@Override
-	public void perform(DAC dac, CommandSender commandSender, String[] args) {
+	public void perform(DAC dac, CommandSender sender, String[] args) {
 
-		if (!this.hasPermission(commandSender)) {
+		if (!this.hasPermission(dac, sender)) {
 			return;
 		}
 
-		Player player = Bukkit.getPlayer(commandSender.getName());
+		Player player = Bukkit.getPlayer(sender.getName());
 		if (player == null) {
-			dac.getLogger().warning("This command must be used by a player.");
+			MessageManagement.messageToSender(dac, sender, "messages.commands.errors.notAPlayer");
 			return;
 		}
 
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
 		if (config == null) {
-			player.sendMessage(Component.text("There are no defined DAC regions.", NamedTextColor.RED));
+			MessageManagement.messageToSender(dac, player, "messages.commands.errors.noDefinedRegions");
 			return;
 		}
 
@@ -70,7 +77,7 @@ public class InitCommand extends Subcommand {
 		RegionManager regionsManager = container.get(wgWorld);
 
 		if (regionsManager == null) {
-			player.sendMessage(Component.text("Error when retrieving world regions.", NamedTextColor.RED));
+			MessageManagement.messageToSender(dac, player, "messages.commands.errors.regionsRetrieve");
 			return;
 		}
 
@@ -89,28 +96,33 @@ public class InitCommand extends Subcommand {
 			for (ProtectedRegion item : set) {
 				if (item.equals(region)) {
 					createDacGame(dac, player, dacName, region);
-					player.sendMessage(Component.text("A new DAC game has been successfully initialized.", NamedTextColor.GREEN));
+					MessageManagement.messageToSender(dac, player, "messages.commands.init.success");
 					return;
 				}
 			}
 		}
 
-		player.sendMessage(Component.text("You are not in a DAC region.", NamedTextColor.RED));
+		MessageManagement.messageToSender(dac, player, "messages.commands.errors.notInRegion");
 	}
 
 
-	private void createDacGame(DAC dac, Player player, String dacName, ProtectedRegion region) {
+	private void createDacGame(DAC dac, Player sender, String dacName, ProtectedRegion region) {
 		if (dac.getGames().containsKey(dacName)) {
-			player.sendMessage(Component.text("A DAC game already exists in this region.", NamedTextColor.RED));
+			MessageManagement.messageToSender(dac, sender, "messages.commands.init.gameAlreadyInProgress");
 			return;
 		}
 
 		dac.addGame(dacName, new DacGame(dac, dacName));
-		ArrayList<Player> playersInRegion = RegionManagement.getPlayersInWGRegion(player.getWorld(), region);
-		for (Player playerInRegion : playersInRegion) {
-			playerInRegion.sendMessage(Component.text("A DAC game has been created in the " + dacName + " region.",
-					NamedTextColor.GREEN));
-		}
+		ArrayList<Player> playersInRegion = RegionManagement.getPlayersInWGRegion(sender.getWorld(), region);
+		HashMap<String, String> placeholders = new HashMap<>();
+		placeholders.put("\\{dac-name\\}", dacName);
+		MessageManagement.commandMessageToPlayers(
+				dac,
+				sender,
+				playersInRegion,
+				"messages.commands.init.newGameCreated",
+				placeholders
+		);
 	}
 
 

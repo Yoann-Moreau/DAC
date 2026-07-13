@@ -25,6 +25,12 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class StartCommand extends Subcommand {
+
+	public StartCommand(DAC dac) {
+		super(dac);
+	}
+
+
 	@Override
 	public String getName() {
 		return "start";
@@ -48,7 +54,7 @@ public class StartCommand extends Subcommand {
 	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
 
-		if (!this.hasPermission(commandSender)) {
+		if (!this.hasPermission(dac, commandSender)) {
 			return;
 		}
 

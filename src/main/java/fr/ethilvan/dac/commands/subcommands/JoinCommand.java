@@ -26,6 +26,12 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class JoinCommand extends Subcommand {
+
+	public JoinCommand(DAC dac) {
+		super(dac);
+	}
+
+
 	@Override
 	public String getName() {
 		return "join";
@@ -49,7 +55,7 @@ public class JoinCommand extends Subcommand {
 	@Override
 	public void perform(DAC dac, CommandSender commandSender, String[] args) {
 
-		if (!this.hasPermission(commandSender)) {
+		if (!this.hasPermission(dac, commandSender)) {
 			return;
 		}
 

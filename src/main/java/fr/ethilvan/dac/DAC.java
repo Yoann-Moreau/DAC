@@ -1,6 +1,7 @@
 package fr.ethilvan.dac;
 
 import fr.ethilvan.dac.commands.DacCommand;
+import fr.ethilvan.dac.commands.config.DacConfig;
 import fr.ethilvan.dac.game.DacGame;
 import fr.ethilvan.dac.listeners.GameListeners;
 import fr.ethilvan.dac.listeners.GamePhaseListeners;
@@ -12,19 +13,24 @@ import java.util.HashMap;
 
 public final class DAC extends JavaPlugin {
 
-	private HashMap<String, DacGame> games;
+	private final DacConfig dacConfig;
+
+	private final HashMap<String, DacGame> games;
+
 
 	public DAC() {
+		this.dacConfig = new DacConfig(this);
 		this.games = new HashMap<>();
+	}
+
+
+	public DacConfig getDacConfig() {
+		return dacConfig;
 	}
 
 
 	public HashMap<String, DacGame> getGames() {
 		return games;
-	}
-
-	public void setGames(HashMap<String, DacGame> games) {
-		this.games = games;
 	}
 
 	public void addGame(String dacName, DacGame dacGame) {

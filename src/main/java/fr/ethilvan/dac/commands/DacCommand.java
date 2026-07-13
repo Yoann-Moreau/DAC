@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class DacCommand implements TabExecutor {
 
 	private final DAC dac;
@@ -20,15 +21,15 @@ public class DacCommand implements TabExecutor {
 	public DacCommand(DAC dac) {
 		this.dac = dac;
 
-		subcommands.add(new InitCommand());
-		subcommands.add(new DefineCommand());
-		subcommands.add(new PoolCommand());
-		subcommands.add(new DivingCommand());
-		subcommands.add(new JoinCommand());
-		subcommands.add(new StartCommand());
-		subcommands.add(new StopCommand());
-		subcommands.add(new FillCommand());
-		subcommands.add(new DeleteCommand());
+		subcommands.add(new InitCommand(dac));
+		subcommands.add(new DefineCommand(dac));
+		subcommands.add(new PoolCommand(dac));
+		subcommands.add(new DivingCommand(dac));
+		subcommands.add(new JoinCommand(dac));
+		subcommands.add(new StartCommand(dac));
+		subcommands.add(new StopCommand(dac));
+		subcommands.add(new FillCommand(dac));
+		subcommands.add(new DeleteCommand(dac));
 	}
 
 
@@ -51,10 +52,11 @@ public class DacCommand implements TabExecutor {
 					subcommand.perform(dac, commandSender, args);
 				}
 			}
-		} else {
+		}
+		else {
 			commandSender.sendMessage("-------------------DAC commands-------------------");
 			for (Subcommand subcommand : getSubcommands()) {
-				commandSender.sendRichMessage("<gold>"+ subcommand.getSyntax() + "<gray>: <white>" +
+				commandSender.sendRichMessage("<gold>" + subcommand.getSyntax() + "<gray>: <white>" +
 						subcommand.getDescription());
 			}
 			commandSender.sendMessage("--------------------------------------------------");
@@ -76,7 +78,7 @@ public class DacCommand implements TabExecutor {
 			ArrayList<String> subcommandNames = new ArrayList<>();
 
 			for (Subcommand subcommand : getSubcommands()) {
-				if (subcommand.hasPermission(commandSender)) {
+				if (subcommand.hasPermission(dac, commandSender)) {
 					subcommandNames.add(subcommand.getName());
 				}
 			}
