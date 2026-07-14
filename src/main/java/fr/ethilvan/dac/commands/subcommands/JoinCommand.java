@@ -51,7 +51,7 @@ public class JoinCommand extends Subcommand {
 
 	@Override
 	public String getPermission() {
-		return "dac.join";
+		return "dac.play.join";
 	}
 
 	@Override

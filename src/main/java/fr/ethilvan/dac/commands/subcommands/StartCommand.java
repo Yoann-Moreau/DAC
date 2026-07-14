@@ -49,7 +49,7 @@ public class StartCommand extends Subcommand {
 
 	@Override
 	public String getPermission() {
-		return "dac.start";
+		return "dac.play.start";
 	}
 
 	@Override

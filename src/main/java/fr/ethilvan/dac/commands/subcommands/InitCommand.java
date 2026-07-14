@@ -48,7 +48,7 @@ public class InitCommand extends Subcommand {
 
 	@Override
 	public String getPermission() {
-		return "dac.init";
+		return "dac.play.init";
 	}
 
 	@Override

@@ -46,7 +46,7 @@ public class StopCommand extends Subcommand {
 
 	@Override
 	public String getPermission() {
-		return "dac.stop";
+		return "dac.play.stop";
 	}
 
 	@Override
