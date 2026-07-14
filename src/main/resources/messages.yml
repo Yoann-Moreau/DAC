@@ -4,15 +4,19 @@ messages:
       notAPlayer: "<red>This command must be performed by a player."
       noPermission: "<red>You do not permission to perform this command."
       noDefinedRegions: "<red>There are no defined DAC regions."
-      regionsRetrieve: "<red>Error when retrieving world regions."
+      worldRegionsRetrieve: "<red>Error when retrieving world regions."
+      dacRegionsRetrieve: "<red>Error while retrieving DAC regions."
+      poolNameRetrieve: "<red>Error while retrieving pool region name."
+      poolRetrieve: "<red>Error while retrieving pool region."
+      worldNameRetrieve: "<red>Error while retrieving world name."
+      worldRetrieve: "<red>Error while retrieving world."
       notInRegion: "<red>You are not in a DAC region."
       noDacGame: "<red>No DAC games exists in this region."
-      noRegions: "<red>No regions are defined for the <gold>{dac-name}</gold> region."
+      noRegions: "<red>No regions are defined for the <gold>{dac-name}</gold> DAC."
       noBaseRegion: "<red>The base region for the <gold>{dac-name}</gold> DAC does not exist."
       noWorldGuardRegion: "<red>No WorldGuard region found for this base region."
     init:
       description: "Initializes a DAC game. Use before /dac join."
-      success: "<green>A new DAC game has been successfully initialized in this region."
       newGameCreated: "<green>A DAC game has been created in the <gold>{dac-name}</gold> region."
       gameAlreadyInProgress: "<red>A DAC game already exists in this region."
     join:
@@ -24,3 +28,9 @@ messages:
       alreadyJoined: "<red>You have already joined the current game in this region."
       colorTaken: "<red>Another player has already joined with this color. Please select another one."
       joined: "<color:{color}>{player-name} <green>has joined the DAC game in the <gold>{dac-name}</gold> region with the color <color:{color}>{color-name}<green>."
+    start:
+      description: "Starts the DAC game in the region where the command is executed."
+      success:
+      alreadyStarted: "<red>A DAC game has already been started in this region."
+      noPlayers: "<red>No players have joined this DAC game."
+      started: "<gold>The DAC game has started"

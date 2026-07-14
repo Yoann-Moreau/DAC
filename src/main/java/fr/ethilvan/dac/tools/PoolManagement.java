@@ -16,26 +16,26 @@ public class PoolManagement {
 	public static String water(DAC dac, String dacName) {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
-			return "Error while retrieving DAC regions.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.worldRegionsRetrieve");
 		}
 		String poolRegionName = config.getString("pool");
 		if (poolRegionName == null) {
-			return "Error while retrieving pool region name.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.poolNameRetrieve");
 		}
 
 		String worldName = config.getString("world");
 		if (worldName == null) {
-			return "Error while retrieving world name.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.worldNameRetrieve");
 		}
 
 		Region poolRegion = RegionManagement.getExistingRegion(worldName, poolRegionName);
 		if (poolRegion == null) {
-			return "Error while retrieving pool region.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.poolRetrieve");
 		}
 
 		World world = Bukkit.getWorld(worldName);
 		if (world == null) {
-			return "Error while retrieving world.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.worldNameRetrieve");
 		}
 
 		for (BlockVector3 blockVector3 : poolRegion) {
@@ -56,17 +56,17 @@ public class PoolManagement {
 		String poolRegionName = config.getString("pool");
 		String worldName = config.getString("world");
 		if (worldName == null) {
-			return "Error while retrieving world name";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.worldNameRetrieve");
 		}
 
 		Region region = RegionManagement.getExistingRegion(worldName, poolRegionName);
 		if (region == null) {
-			return "Error while retrieving pool region.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.poolRetrieve");
 		}
 
 		World world = Bukkit.getWorld(worldName);
 		if (world == null) {
-			return "Error while retrieving world.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.worldRetrieve");
 		}
 
 		for (BlockVector3 blockVector3 : region) {
@@ -87,23 +87,23 @@ public class PoolManagement {
 	public static String dac(DAC dac, String dacName) {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
-			return "Error while retrieving DAC regions.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.dacRegionsRetrieve");
 		}
 
 		String poolRegionName = config.getString("pool");
 		String worldName = config.getString("world");
 		if (worldName == null) {
-			return "Error while retrieving world name";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.worldNameRetrieve");
 		}
 
 		Region region = RegionManagement.getExistingRegion(worldName, poolRegionName);
 		if (region == null) {
-			return "Error while retrieving pool region.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.poolRetrieve");
 		}
 
 		World world = Bukkit.getWorld(worldName);
 		if (world == null) {
-			return "Error while retrieving world.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.worldRetrieve");
 		}
 
 		Random random = new Random();
@@ -134,23 +134,23 @@ public class PoolManagement {
 	public static String dac(DAC dac, String dacName, int randomBlockX, int randomBlockZ) {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
-			return "Error while retrieving DAC regions.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.dacRegionsRetrieve");
 		}
 
 		String poolRegionName = config.getString("pool");
 		String worldName = config.getString("world");
 		if (worldName == null) {
-			return "Error while retrieving world name";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.worldNameRetrieve");
 		}
 
 		Region region = RegionManagement.getExistingRegion(worldName, poolRegionName);
 		if (region == null) {
-			return "Error while retrieving pool region.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.poolRetrieve");
 		}
 
 		World world = Bukkit.getWorld(worldName);
 		if (world == null) {
-			return "Error while retrieving world.";
+			return MessageManagement.getMessageFromKey(dac, "messages.errors.worldRetrieve");
 		}
 
 		for (BlockVector3 blockVector3 : region) {

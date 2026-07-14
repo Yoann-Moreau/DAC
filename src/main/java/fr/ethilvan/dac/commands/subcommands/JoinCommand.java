@@ -97,7 +97,7 @@ public class JoinCommand extends Subcommand {
 		RegionManager regionsManager = container.get(wgWorld);
 
 		if (regionsManager == null) {
-			MessageManagement.messageToSender(dac, player, "messages.commands.errors.regionsRetrieve");
+			MessageManagement.messageToSender(dac, player, "messages.commands.errors.worldRegionsRetrieve");
 			return;
 		}
 

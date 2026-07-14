@@ -64,8 +64,8 @@ public class InitCommand extends Subcommand {
 			return;
 		}
 
-		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
-		if (config == null) {
+		ConfigurationSection regionsConfig = dac.getConfig().getConfigurationSection("regions");
+		if (regionsConfig == null) {
 			MessageManagement.messageToSender(dac, player, "messages.commands.errors.noDefinedRegions");
 			return;
 		}
@@ -76,15 +76,15 @@ public class InitCommand extends Subcommand {
 		RegionManager regionsManager = container.get(wgWorld);
 
 		if (regionsManager == null) {
-			MessageManagement.messageToSender(dac, player, "messages.commands.errors.regionsRetrieve");
+			MessageManagement.messageToSender(dac, player, "messages.commands.errors.worldRegionsRetrieve");
 			return;
 		}
 
 		Location wgLocation = BukkitAdapter.adapt(player.getLocation());
 
-		Set<String> dacNames = dac.getConfig().getKeys(false);
+		Set<String> dacNames = regionsConfig.getKeys(false);
 		for (String dacName : dacNames) {
-			String regionName = dac.getConfig().getString(dacName + ".base");
+			String regionName = regionsConfig.getString(dacName + ".base");
 			if (regionName == null || regionName.isEmpty()) { // Skip iteration if the base region is not defined
 				continue;
 			}
@@ -96,7 +96,6 @@ public class InitCommand extends Subcommand {
 			for (ProtectedRegion item : set) {
 				if (item.equals(region)) {
 					createDacGame(dac, player, dacName, region);
-					MessageManagement.messageToSender(dac, player, "messages.commands.init.success");
 					return;
 				}
 			}
