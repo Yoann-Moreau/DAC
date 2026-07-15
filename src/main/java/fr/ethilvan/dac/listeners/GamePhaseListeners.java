@@ -17,6 +17,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class GamePhaseListeners implements Listener {
 
@@ -83,7 +85,7 @@ public class GamePhaseListeners implements Listener {
 			e.getDacGame().messageAllPlayers(Component.text("The winner is " +
 					e.getDacGame().getCurrentPlayerNames().getFirst(), NamedTextColor.GREEN));
 			e.getDacGame().setStarted(false);
-			e.getDacGame().setPlayerMaterials(null);
+			e.getDacGame().setPlayerDacColors(null);
 			e.getDacGame().setPlayerLocations(null);
 			e.getDacGame().setPlayerNames(null);
 			e.getDacGame().setCurrentPlayerNames(null);
@@ -123,10 +125,26 @@ public class GamePhaseListeners implements Listener {
 
 		e.getDacGame().setCurrentPlayerName(e.getPlayer().getName());
 
-		e.getDacGame().messageAllButOnePlayer(e.getPlayer(),
-				Component.text("It's " + e.getPlayer().getName() + "'s turn.", NamedTextColor.GREEN));
+		HashMap<String, String> placeholders = new HashMap<>();
+		placeholders.put("\\{player-name}", player.getName());
+		placeholders.put("\\{player-color}", e.getDacGame().getPlayerDacColors().get(player.getName()).name().toLowerCase());
 
-		e.getPlayer().sendMessage(Component.text("It's your turn.", NamedTextColor.GOLD));
+		ArrayList<Player> players = new ArrayList<>();
+		for (String playerName : e.getDacGame().getPlayerNames()) {
+			Player playerInLoop = Bukkit.getPlayer(playerName);
+			if (playerInLoop == null || playerInLoop.equals(player)) {
+				continue;
+			}
+			players.add(playerInLoop);
+		}
+		MessageManagement.messageToPlayers(
+				e.getDacGame().getDac(),
+				players,
+				"messages.gamePhases.playerTurn",
+				placeholders
+		);
+
+		MessageManagement.messageToPlayer(e.getDacGame().getDac(), player, "messages.gamePhases.yourTurn");
 		e.getPlayer().teleport(e.getDacGame().getDivingLocation());
 	}
 }

@@ -12,7 +12,7 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
 import fr.ethilvan.dac.game.DacGame;
-import fr.ethilvan.dac.tools.Colors;
+import fr.ethilvan.dac.tools.DacColor;
 import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
@@ -73,9 +73,11 @@ public class JoinCommand extends Subcommand {
 		}
 
 		String color = args[1];
-
-		if (!Colors.getAvailableColors().contains(color.toUpperCase())) {
-			String colorsString = Colors.getChatColorsListInString();
+		try {
+			DacColor.valueOf(color.toUpperCase());
+		}
+		catch (IllegalArgumentException e) {
+			String colorsString = DacColor.getChatColorsListInString();
 			MiniMessage mm = MiniMessage.miniMessage();
 			String message = MessageManagement.getMessageFromKey(dac, player, "messages.commands.join.wrongColorName");
 			message = message.replaceAll("\\{colors}", colorsString);
@@ -144,17 +146,26 @@ public class JoinCommand extends Subcommand {
 		}
 
 		DacGame dacGame = dac.getGames().get(dacName);
-		if (dacGame.getPlayerMaterials().containsKey(player.getName())) {
+		if (dacGame.getPlayerDacColors().containsKey(player.getName())) {
 			MessageManagement.messageToSender(dac, player, "messages.commands.join.alreadyJoined");
 			return true;
 		}
 
-		if (dacGame.getPlayerMaterials().containsValue(Colors.convertColorToMaterial(color))) {
+		DacColor dacColor;
+		try {
+			dacColor = DacColor.valueOf(color.toUpperCase());
+		}
+		catch (IllegalArgumentException e) {
+			MessageManagement.messageToSender(dac, player, "messages.commands.join.wrongColorName");
+			return true;
+		}
+
+		if (dacGame.getPlayerDacColors().containsValue(dacColor)) {
 			MessageManagement.messageToSender(dac, player, "messages.commands.join.colorTaken");
 			return true;
 		}
 
-		dacGame.addPlayerMaterial(player.getName(), color);
+		dacGame.addPlayerDacColor(player.getName(), dacColor);
 		dacGame.addPlayerLocation(player.getName(), player.getLocation());
 		dacGame.addPlayerName(player.getName());
 
@@ -203,6 +214,10 @@ public class JoinCommand extends Subcommand {
 
 	@Override
 	public ArrayList<String> getAutoCompleteChoices(DAC dac) {
-		return new ArrayList<>(Colors.getAvailableColors());
+		ArrayList<String> colorNames = new ArrayList<>();
+		for (DacColor dacColor : DacColor.values()) {
+			colorNames.add(dacColor.name());
+		}
+		return colorNames;
 	}
 }

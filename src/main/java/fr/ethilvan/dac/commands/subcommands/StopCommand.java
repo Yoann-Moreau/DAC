@@ -185,7 +185,7 @@ public class StopCommand extends Subcommand {
 		dacGame.messageAllButOnePlayer(player, Component.text("The DAC game has been stopped", NamedTextColor.RED));
 
 		dacGame.setStarted(false);
-		dacGame.setPlayerMaterials(null);
+		dacGame.setPlayerDacColors(null);
 		dacGame.setPlayerLocations(null);
 		dacGame.setPlayerNames(null);
 		dacGame.setCurrentPlayerNames(null);

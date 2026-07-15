@@ -125,7 +125,7 @@ public class StartCommand extends Subcommand {
 		for (String playerName : dacGame.getPlayerNames()) {
 			Player playerInLoop = Bukkit.getPlayer(playerName);
 			if (playerInLoop == null) {
-				dacGame.removePlayerMaterial(playerName);
+				dacGame.removePlayerDacColor(playerName);
 				dacGame.removePlayerLocation(playerName);
 				dacGame.removePlayerName(playerName);
 				dacGame.removeCurrentPlayerName(playerName);

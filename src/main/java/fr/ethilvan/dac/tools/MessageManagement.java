@@ -65,15 +65,7 @@ public class MessageManagement {
 		if (message == null) {
 			return;
 		}
-		for (HashMap.Entry<String, String> entry : placeholders.entrySet()) {
-			message = message.replaceAll(entry.getKey(), entry.getValue());
-		}
-		for (Player player : players) {
-			if (!player.isOnline()) {
-				continue;
-			}
-			player.sendRichMessage(message);
-		}
+		messageWithPlaceholderToPlayers(players, placeholders, message);
 	}
 
 
@@ -104,6 +96,20 @@ public class MessageManagement {
 	}
 
 
+	public static void messageToPlayers(
+			DAC dac,
+			ArrayList<Player> players,
+			String messageKey,
+			HashMap<String, String> placeholders
+	) {
+		String message = getMessageFromKey(dac, messageKey);
+		if (message == null) {
+			return;
+		}
+		messageWithPlaceholderToPlayers(players, placeholders, message);
+	}
+
+
 	public static String getMessageFromKey(DAC dac, String messageKey) {
 		String message = dac.getDacConfig().getMessagesConfig().getString(messageKey);
 		if (message == null) {
@@ -126,5 +132,22 @@ public class MessageManagement {
 			message = message.replaceAll(entry.getKey(), entry.getValue());
 		}
 		return message;
+	}
+
+
+	public static void messageWithPlaceholderToPlayers(
+			ArrayList<Player> players,
+			HashMap<String, String> placeholders,
+			String message
+	) {
+		for (HashMap.Entry<String, String> entry : placeholders.entrySet()) {
+			message = message.replaceAll(entry.getKey(), entry.getValue());
+		}
+		for (Player player : players) {
+			if (!player.isOnline()) {
+				continue;
+			}
+			player.sendRichMessage(message);
+		}
 	}
 }

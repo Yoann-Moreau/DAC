@@ -2,11 +2,10 @@ package fr.ethilvan.dac.game;
 
 import com.sk89q.worldedit.math.BlockVector3;
 import fr.ethilvan.dac.DAC;
-import fr.ethilvan.dac.tools.Colors;
+import fr.ethilvan.dac.tools.DacColor;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class DacGame {
 
 	private final String name;
 
-	private HashMap<String, Material> playerMaterials;
+	private HashMap<String, DacColor> playerDacColors;
 	private HashMap<String, Location> playerLocations;
 	private ArrayList<String> playerNames;
 	private ArrayList<String> currentPlayerNames;
@@ -42,7 +41,7 @@ public class DacGame {
 	public DacGame(DAC dac, String dacName) {
 		this.dac = dac;
 		this.name = dacName;
-		this.playerMaterials = new HashMap<>();
+		this.playerDacColors = new HashMap<>();
 		this.playerLocations = new HashMap<>();
 		this.playerNames = new ArrayList<>();
 		this.currentPlayerNames = new ArrayList<>();
@@ -62,22 +61,22 @@ public class DacGame {
 	}
 
 
-	public HashMap<String, Material> getPlayerMaterials() {
-		return this.playerMaterials;
+	public HashMap<String, DacColor> getPlayerDacColors() {
+		return this.playerDacColors;
 	}
 
-	public void setPlayerMaterials(HashMap<String, Material> playerMaterials) {
-		this.playerMaterials = playerMaterials;
+	public void setPlayerDacColors(HashMap<String, DacColor> playerDacColors) {
+		this.playerDacColors = playerDacColors;
 	}
 
-	public void addPlayerMaterial(String playerName, String color) {
-		if (!this.playerMaterials.containsKey(playerName)) {
-			this.playerMaterials.put(playerName, Colors.convertColorToMaterial(color));
+	public void addPlayerDacColor(String playerName, DacColor dacColor) {
+		if (!this.playerDacColors.containsKey(playerName)) {
+			this.playerDacColors.put(playerName, dacColor);
 		}
 	}
 
-	public void removePlayerMaterial(String playerName) {
-		this.playerMaterials.remove(playerName);
+	public void removePlayerDacColor(String playerName) {
+		this.playerDacColors.remove(playerName);
 	}
 
 

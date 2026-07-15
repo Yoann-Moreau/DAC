@@ -22,7 +22,7 @@ messages:
     join:
       description: "Joins a DAC game with the specified color."
       success: "<green>You have successfully joined the DAC game in the <gold>{dac-name}</gold> region."
-      noColorProvided: "<red>You must provide one the suggested colors."
+      noColorProvided: "<red>You must provide one of the suggested colors."
       wrongColorName: "<red>The available colors are: {colors}."
       noGameInRegion: "<red>No DAC games have been created in this region."
       alreadyJoined: "<red>You have already joined the current game in this region."
@@ -35,5 +35,7 @@ messages:
       noPlayers: "<red>No players have joined this DAC game."
       started: "<gold>The DAC game has started"
   gamePhases:
-    newDacTurn: "<grey>A new DAC turn has begun!"
+    newDacTurn: "<gray>A new DAC turn has begun!"
+    yourTurn: "<gold>It's your turn"
+    playerTurn: "<gray>It's <{player-color}>{player-name}</{player-color}'s turn."
     suddenDeath: "<gold>The pool has been filled! It's time for sudden death!"
