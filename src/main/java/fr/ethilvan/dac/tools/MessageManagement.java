@@ -15,6 +15,10 @@ public class MessageManagement {
 		if (message == null) {
 			return;
 		}
+		if (!(sender instanceof Player)) {
+			dac.getLogger().warning(message);
+			return;
+		}
 		sender.sendRichMessage(message);
 	}
 
@@ -63,6 +67,33 @@ public class MessageManagement {
 		}
 		for (HashMap.Entry<String, String> entry : placeholders.entrySet()) {
 			message = message.replaceAll(entry.getKey(), entry.getValue());
+		}
+		for (Player player : players) {
+			if (!player.isOnline()) {
+				continue;
+			}
+			player.sendRichMessage(message);
+		}
+	}
+
+
+	public static void messageToPlayer(
+			DAC dac,
+			Player player,
+			String messageKey
+	) {
+		String message = getMessageFromKey(dac, player, messageKey);
+		if (message == null) {
+			return;
+		}
+		player.sendRichMessage(message);
+	}
+
+
+	public static void messageToPlayers(DAC dac, ArrayList<Player> players, String messageKey) {
+		String message = getMessageFromKey(dac, messageKey);
+		if (message == null) {
+			return;
 		}
 		for (Player player : players) {
 			if (!player.isOnline()) {

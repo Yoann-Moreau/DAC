@@ -34,3 +34,6 @@ messages:
       alreadyStarted: "<red>A DAC game has already been started in this region."
       noPlayers: "<red>No players have joined this DAC game."
       started: "<gold>The DAC game has started"
+  gamePhases:
+    newDacTurn: "<grey>A new DAC turn has begun!"
+    suddenDeath: "<gold>The pool has been filled! It's time for sudden death!"

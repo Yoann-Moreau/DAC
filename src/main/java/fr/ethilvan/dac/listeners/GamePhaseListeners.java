@@ -5,6 +5,7 @@ import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.events.DacGameTurnEvent;
 import fr.ethilvan.dac.events.GameStartEvent;
 import fr.ethilvan.dac.events.PlayerTurnEvent;
+import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.PoolManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
@@ -35,32 +36,43 @@ public class GamePhaseListeners implements Listener {
 			return;
 		}
 
+		String currentPlayerName = e.getDacGame().getCurrentPlayerNames().getFirst();
+		Player currentPlayer = Bukkit.getPlayer(currentPlayerName);
+		if (currentPlayer == null) {
+			return;
+		}
+
+		ArrayList<Player> players = new ArrayList<>();
+		for (String playerName : e.getDacGame().getPlayerNames()) {
+			players.add(Bukkit.getPlayer(playerName));
+		}
+
+		DAC dac = e.getDacGame().getDac();
+
 		if (e.isPoolFilled()) {
 			if (!e.getDacGame().isSuddenDeath()) {
-				e.getDacGame().messageAllPlayers(Component.text("The pool has been filled! It's time for sudden death!",
-						NamedTextColor.GOLD));
+				MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.suddenDeath");
 				e.getDacGame().setSuddenDeath(true);
 			}
-			DAC dac = e.getDacGame().getDac();
 			ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." +
 					e.getDacGame().getName());
 			if (config == null) {
-				dac.getLogger().severe("Error while retrieving DAC regions.");
+				MessageManagement.messageToPlayer(dac, currentPlayer, "messages.gamePhases.dacRegionsRetrieve");
 				return;
 			}
 			String poolRegionName = config.getString("pool");
 			if (poolRegionName == null) {
-				dac.getLogger().severe("Error while retrieving pool region name.");
+				MessageManagement.messageToPlayer(dac, currentPlayer, "messages.gamePhases.poolNameRetrieve");
 				return;
 			}
 			String worldName = config.getString("world");
 			if (worldName == null) {
-				dac.getLogger().severe("Error while retrieving world name.");
+				MessageManagement.messageToPlayer(dac, currentPlayer, "messages.gamePhases.worldNameRetrieve");
 				return;
 			}
 			Region poolRegion = RegionManagement.getExistingRegion(worldName, poolRegionName);
 			if (poolRegion == null) {
-				dac.getLogger().severe("Error while retrieving pool region.");
+				MessageManagement.messageToPlayer(dac, currentPlayer, "messages.gamePhases.poolRetrieve");
 				return;
 			}
 			e.getDacGame().setSuddenDeathDacLocation(PoolManagement.getRandomBlockInPool(poolRegion));
@@ -79,7 +91,7 @@ public class GamePhaseListeners implements Listener {
 			return;
 		}
 
-		e.getDacGame().messageAllPlayers(Component.text("A new DAC turn has begun.", NamedTextColor.GREEN));
+		MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.newDacTurn");
 		Bukkit.getPluginManager().callEvent(
 				new PlayerTurnEvent(e.getDacGame(),
 						e.getDacGame().getCurrentPlayerNames().getFirst()
