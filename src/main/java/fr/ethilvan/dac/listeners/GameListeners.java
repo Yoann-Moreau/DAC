@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.ArrayList;
 
+
 public class GameListeners implements Listener {
 
 	private final DAC dac;
@@ -102,7 +103,12 @@ public class GameListeners implements Listener {
 					player.teleport(dacGame.getPlayerLocations().get(player.getName()));
 					boolean poolFilled = PoolManagement.isPoolFilled(player.getWorld(), region);
 					if (poolFilled && !dacGame.isSuddenDeath()) {
-						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, true));
+						dacGame.setSuddenDeathDacLocation(PoolManagement.getRandomBlockInPool(region));
+						dacGame.messageAllPlayers(
+								Component.text("The pool has been filled! It's time for sudden death!", NamedTextColor.GOLD)
+						);
+						dacGame.setSuddenDeath(true);
+						Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
 						return;
 					}
 					Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));

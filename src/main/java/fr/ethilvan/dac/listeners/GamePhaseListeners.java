@@ -82,7 +82,7 @@ public class GamePhaseListeners implements Listener {
 		e.getDacGame().messageAllPlayers(Component.text("A new DAC turn has begun.", NamedTextColor.GREEN));
 		Bukkit.getPluginManager().callEvent(
 				new PlayerTurnEvent(e.getDacGame(),
-						e.getDacGame().getCurrentPlayerNames().get(0)
+						e.getDacGame().getCurrentPlayerNames().getFirst()
 				)
 		);
 	}
