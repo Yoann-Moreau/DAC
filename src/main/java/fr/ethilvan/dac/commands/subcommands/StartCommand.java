@@ -15,8 +15,6 @@ import fr.ethilvan.dac.events.GameStartEvent;
 import fr.ethilvan.dac.game.DacGame;
 import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.PoolManagement;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -137,7 +135,7 @@ public class StartCommand extends Subcommand {
 		}
 		MessageManagement.commandMessageToPlayers(dac, player, playersInGame, "messages.commands.start.started");
 
-		String message = PoolManagement.water(dac, dacName);
+		String message = PoolManagement.waterPattern(dac, dacName);
 		if (message != null) {
 			player.sendRichMessage(message);
 			return;

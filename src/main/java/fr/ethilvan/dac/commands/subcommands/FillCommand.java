@@ -70,9 +70,9 @@ public class FillCommand extends Subcommand {
 
 		String message = null;
 		switch (pattern) {
-			case "water" -> message = PoolManagement.water(dac, dacName);
-			case "grid" -> message = PoolManagement.grid(dac, dacName);
-			case "dac" -> message = PoolManagement.dac(dac, dacName);
+			case "water" -> message = PoolManagement.waterPattern(dac, dacName);
+			case "grid" -> message = PoolManagement.gridPattern(dac, dacName);
+			case "dac" -> message = PoolManagement.dacPattern(dac, dacName);
 		}
 		if (message != null) {
 			player.sendMessage(Component.text(message, NamedTextColor.RED));

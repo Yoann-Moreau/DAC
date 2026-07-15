@@ -77,7 +77,7 @@ public class JoinCommand extends Subcommand {
 		if (!Colors.getAvailableColors().contains(color.toUpperCase())) {
 			String colorsString = Colors.getChatColorsListInString();
 			MiniMessage mm = MiniMessage.miniMessage();
-			String message = MessageManagement.getMessageFromKey(dac, "messages.commands.join.wrongColorName");
+			String message = MessageManagement.getMessageFromKey(dac, player, "messages.commands.join.wrongColorName");
 			message = message.replaceAll("\\{colors}", colorsString);
 			Component parsed = mm.deserialize(message);
 			player.sendMessage(parsed);
@@ -188,7 +188,7 @@ public class JoinCommand extends Subcommand {
 		placeholders.put("\\{color-name}", color.toUpperCase());
 		placeholders.put("\\{player-name\\}", player.getName());
 		MiniMessage mm = MiniMessage.miniMessage();
-		String message = MessageManagement.getMessageFromKey(dac, "messages.commands.join.joined");
+		String message = MessageManagement.getMessageFromKey(dac, player, "messages.commands.join.joined");
 		message = MessageManagement.replacePlaceholders(message, placeholders);
 		Component parsed = mm.deserialize(message);
 		for (Player playerInRegion : playersInRegion) {

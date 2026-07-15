@@ -11,6 +11,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -91,17 +92,21 @@ public class GamePhaseListeners implements Listener {
 	public void onPlayerTurn(PlayerTurnEvent e) {
 		e.getDacGame().setJumpOver(false);
 
-		if (e.getPlayer() == null) {
+		Player player = e.getPlayer();
+		if (player == null) {
 			return;
 		}
 
 		if (e.getDacGame().isSuddenDeath()) {
-			PoolManagement.dac(
+			String message = PoolManagement.dacPattern(
 					e.getDacGame().getDac(),
 					e.getDacGame().getName(),
 					e.getDacGame().getSuddenDeathDacLocation().x(),
 					e.getDacGame().getSuddenDeathDacLocation().z()
 			);
+			if (message != null) {
+				player.sendRichMessage(message);
+			}
 		}
 
 		e.getDacGame().setCurrentPlayerName(e.getPlayer().getName());

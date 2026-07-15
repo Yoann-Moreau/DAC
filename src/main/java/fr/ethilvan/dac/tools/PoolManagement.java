@@ -13,7 +13,7 @@ import java.util.Random;
 
 public class PoolManagement {
 
-	public static String water(DAC dac, String dacName) {
+	public static String waterPattern(DAC dac, String dacName) {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
 			return MessageManagement.getMessageFromKey(dac, "messages.errors.worldRegionsRetrieve");
@@ -47,7 +47,7 @@ public class PoolManagement {
 	}
 
 
-	public static String grid(DAC dac, String dacName) {
+	public static String gridPattern(DAC dac, String dacName) {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
 			return "Error while retrieving DAC regions.";
@@ -84,7 +84,7 @@ public class PoolManagement {
 	}
 
 
-	public static String dac(DAC dac, String dacName) {
+	public static String dacPattern(DAC dac, String dacName) {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
 			return MessageManagement.getMessageFromKey(dac, "messages.errors.dacRegionsRetrieve");
@@ -131,7 +131,7 @@ public class PoolManagement {
 	}
 
 
-	public static String dac(DAC dac, String dacName, int randomBlockX, int randomBlockZ) {
+	public static String dacPattern(DAC dac, String dacName, int randomBlockX, int randomBlockZ) {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
 			return MessageManagement.getMessageFromKey(dac, "messages.errors.dacRegionsRetrieve");

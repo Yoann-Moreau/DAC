@@ -176,7 +176,7 @@ public class StopCommand extends Subcommand {
 
 	private boolean resetAndStopGame(DAC dac, DacGame dacGame, String dacName, Player player) {
 
-		String message = PoolManagement.water(dac, dacName);
+		String message = PoolManagement.waterPattern(dac, dacName);
 		if (message != null) {
 			player.sendMessage(Component.text(message, NamedTextColor.RED));
 			return false;
