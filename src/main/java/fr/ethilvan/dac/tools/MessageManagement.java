@@ -29,9 +29,7 @@ public class MessageManagement {
 			HashMap<String, String> placeholders
 	) {
 		String message = getMessageFromKey(dac, sender, messageKey);
-		for (HashMap.Entry<String, String> entry : placeholders.entrySet()) {
-			message = message.replaceAll(entry.getKey(), entry.getValue());
-		}
+		message = replacePlaceholders(message, placeholders);
 		sender.sendRichMessage(message);
 	}
 
@@ -140,9 +138,7 @@ public class MessageManagement {
 			HashMap<String, String> placeholders,
 			String message
 	) {
-		for (HashMap.Entry<String, String> entry : placeholders.entrySet()) {
-			message = message.replaceAll(entry.getKey(), entry.getValue());
-		}
+		message = replacePlaceholders(message, placeholders);
 		for (Player player : players) {
 			if (!player.isOnline()) {
 				continue;

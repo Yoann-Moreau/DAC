@@ -33,9 +33,9 @@ messages:
       success:
       alreadyStarted: "<red>A DAC game has already been started in this region."
       noPlayers: "<red>No players have joined this DAC game."
-      started: "<gold>The DAC game has started"
+      started: "<gold>The DAC game has started."
   gamePhases:
     newDacTurn: "<gray>A new DAC turn has begun!"
-    yourTurn: "<gold>It's your turn"
-    playerTurn: "<gray>It's <{player-color}>{player-name}</{player-color}'s turn."
+    yourTurn: "<gold>It's your turn."
+    playerTurn: "<gray>It's <{player-color}>{player-name}</{player-color}>'s turn."
     suddenDeath: "<gold>The pool has been filled! It's time for sudden death!"
