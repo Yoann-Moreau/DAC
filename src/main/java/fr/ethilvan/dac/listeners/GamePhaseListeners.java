@@ -5,11 +5,10 @@ import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.events.DacGameTurnEvent;
 import fr.ethilvan.dac.events.GameStartEvent;
 import fr.ethilvan.dac.events.PlayerTurnEvent;
+import fr.ethilvan.dac.game.DacGame;
 import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.PoolManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -44,20 +43,17 @@ public class GamePhaseListeners implements Listener {
 			return;
 		}
 
-		ArrayList<Player> players = new ArrayList<>();
-		for (String playerName : e.getDacGame().getPlayerNames()) {
-			players.add(Bukkit.getPlayer(playerName));
-		}
-
-		DAC dac = e.getDacGame().getDac();
+		DacGame dacGame = e.getDacGame();
+		DAC dac = dacGame.getDac();
+		ArrayList<Player> players = dacGame.getPlayers(dacGame.getPlayerNames());
 
 		if (e.isPoolFilled()) {
-			if (!e.getDacGame().isSuddenDeath()) {
+			if (!dacGame.isSuddenDeath()) {
 				MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.suddenDeath");
-				e.getDacGame().setSuddenDeath(true);
+				dacGame.setSuddenDeath(true);
 			}
 			ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." +
-					e.getDacGame().getName());
+					dacGame.getName());
 			if (config == null) {
 				MessageManagement.messageToPlayer(dac, currentPlayer, "messages.gamePhases.dacRegionsRetrieve");
 				return;
@@ -77,27 +73,28 @@ public class GamePhaseListeners implements Listener {
 				MessageManagement.messageToPlayer(dac, currentPlayer, "messages.gamePhases.poolRetrieve");
 				return;
 			}
-			e.getDacGame().setSuddenDeathDacLocation(PoolManagement.getRandomBlockInPool(poolRegion));
+			dacGame.setSuddenDeathDacLocation(PoolManagement.getRandomBlockInPool(poolRegion));
 		}
 
-		if (e.getDacGame().getCurrentPlayerNames().size() == 1 && e.getDacGame().getPlayerNames().size() > 1) {
-			e.getDacGame().messageAllPlayers(Component.text("The DAC game is over.", NamedTextColor.GREEN));
-			e.getDacGame().messageAllPlayers(Component.text("The winner is " +
-					e.getDacGame().getCurrentPlayerNames().getFirst(), NamedTextColor.GREEN));
-			e.getDacGame().setStarted(false);
-			e.getDacGame().setPlayerDacColors(null);
-			e.getDacGame().setPlayerLocations(null);
-			e.getDacGame().setPlayerNames(null);
-			e.getDacGame().setCurrentPlayerNames(null);
-			e.getDacGame().getDac().removeGame(e.getDacGame().getName());
+		if (dacGame.getCurrentPlayerNames().size() == 1 && dacGame.getPlayerNames().size() > 1) {
+			String winnerName = dacGame.getCurrentPlayerNames().getFirst();
+			MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.gameOver");
+			HashMap<String, String> placeholders = new HashMap<>();
+			placeholders.put("\\{player-name}", winnerName);
+			placeholders.put("\\{player-color}", dacGame.getPlayerDacColors().get(winnerName).name().toLowerCase());
+			MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.winner", placeholders);
+			dacGame.setStarted(false);
+			dacGame.setPlayerDacColors(null);
+			dacGame.setPlayerLocations(null);
+			dacGame.setPlayerNames(null);
+			dacGame.setCurrentPlayerNames(null);
+			dacGame.getDac().removeGame(dacGame.getName());
 			return;
 		}
 
 		MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.newDacTurn");
 		Bukkit.getPluginManager().callEvent(
-				new PlayerTurnEvent(e.getDacGame(),
-						e.getDacGame().getCurrentPlayerNames().getFirst()
-				)
+				new PlayerTurnEvent(dacGame, dacGame.getCurrentPlayerNames().getFirst())
 		);
 	}
 

@@ -7,6 +7,7 @@ import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.events.DacGameTurnEvent;
 import fr.ethilvan.dac.events.PlayerTurnEvent;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.PoolManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
@@ -76,6 +77,8 @@ public class GameListeners implements Listener {
 				int x = blockVector3.x();
 				int z = blockVector3.z();
 
+				ArrayList<Player> players = dacGame.getPlayers(dacGame.getPlayerNames());
+
 				int currentPlayerIndex = dacGame.getCurrentPlayerNames().indexOf(playerName);
 				int nextIndex = currentPlayerIndex + 1;
 
@@ -104,9 +107,7 @@ public class GameListeners implements Listener {
 					boolean poolFilled = PoolManagement.isPoolFilled(player.getWorld(), region);
 					if (poolFilled && !dacGame.isSuddenDeath()) {
 						dacGame.setSuddenDeathDacLocation(PoolManagement.getRandomBlockInPool(region));
-						dacGame.messageAllPlayers(
-								Component.text("The pool has been filled! It's time for sudden death!", NamedTextColor.GOLD)
-						);
+						MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.suddenDeath");
 						dacGame.setSuddenDeath(true);
 						Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
 						return;
@@ -191,9 +192,10 @@ public class GameListeners implements Listener {
 
 				if (currentPlayerNames.size() == eliminatedPlayerNames.size() && currentPlayerNames.size() > 1) {
 
-					dacGame.messageAllPlayers(
-							Component.text("All remaining players have been eliminated this turn, let's try again.",
-									NamedTextColor.GREEN)
+					MessageManagement.messageToPlayers(
+							dac,
+							dacGame.getPlayers(dacGame.getPlayerNames()),
+							"messages.gamePhases.tryAgain"
 					);
 
 					// Launch next turn with every eliminated players

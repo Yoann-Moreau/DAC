@@ -39,3 +39,6 @@ messages:
     yourTurn: "<gold>It's your turn."
     playerTurn: "<gray>It's <{player-color}>{player-name}</{player-color}>'s turn."
     suddenDeath: "<gold>The pool has been filled! It's time for sudden death!"
+    tryAgain: "<yellow>All remaining players have been eliminated this turn, let's try again."
+    gameOver: "<green>The DAC game is over."
+    winner: "<gold>The winner is <{player-color}>{player-name}</{player-color}>."

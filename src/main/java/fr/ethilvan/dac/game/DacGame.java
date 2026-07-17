@@ -213,16 +213,6 @@ public class DacGame {
 		this.suddenDeathDacLocation = suddenDeathDacLocation;
 	}
 
-	public void messageAllPlayers(TextComponent text) {
-		for (String playerName : this.getPlayerNames()) {
-			Player playerInLoop = Bukkit.getPlayer(playerName);
-			if (playerInLoop == null) {
-				continue;
-			}
-			playerInLoop.sendMessage(text);
-		}
-	}
-
 
 	public void  messageAllButOnePlayer(Player player, TextComponent text) {
 		for (String playerName : this.getPlayerNames()) {
@@ -235,5 +225,37 @@ public class DacGame {
 			}
 			playerInLoop.sendMessage(text);
 		}
+	}
+
+
+	public ArrayList<Player> getPlayers(ArrayList<String> playerNames) {
+		ArrayList<Player> players = new ArrayList<>();
+
+		for (String currentPlayerName : playerNames) {
+			Player currentPlayer = Bukkit.getPlayer(currentPlayerName);
+			if (currentPlayer == null) {
+				continue;
+			}
+			players.add(Bukkit.getPlayer(currentPlayerName));
+		}
+
+		return players;
+	}
+
+	public ArrayList<Player> getAllPlayersButOne(ArrayList<String> playerNames, String playerName) {
+		ArrayList<Player> players = new ArrayList<>();
+
+		for (String currentPlayerName : playerNames) {
+			if (currentPlayerName.equals(playerName)) {
+				continue;
+			}
+			Player currentPlayer = Bukkit.getPlayer(currentPlayerName);
+			if (currentPlayer == null) {
+				continue;
+			}
+			players.add(Bukkit.getPlayer(currentPlayerName));
+		}
+
+		return players;
 	}
 }
