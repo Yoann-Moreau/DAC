@@ -22,6 +22,8 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.UUID;
+
 
 public class StartCommand extends Subcommand {
 
@@ -57,8 +59,7 @@ public class StartCommand extends Subcommand {
 			return;
 		}
 
-		Player player = Bukkit.getPlayer(sender.getName());
-		if (player == null) {
+		if (!(sender instanceof Player player)) {
 			MessageManagement.messageToSender(dac, sender, "messages.commands.errors.notAPlayer");
 			return;
 		}
@@ -116,19 +117,19 @@ public class StartCommand extends Subcommand {
 			return;
 		}
 
-		if (dacGame.getPlayerNames().isEmpty()) {
+		if (dacGame.getPlayerUuids().isEmpty()) {
 			MessageManagement.messageToSender(dac, player, "messages.commands.start.noPlayers");
 			return;
 		}
 
 		ArrayList<Player>  playersInGame = new ArrayList<>();
-		for (String playerName : dacGame.getPlayerNames()) {
-			Player playerInLoop = Bukkit.getPlayer(playerName);
+		for (UUID playerUuid : dacGame.getPlayerUuids()) {
+			Player playerInLoop = Bukkit.getPlayer(playerUuid);
 			if (playerInLoop == null) {
-				dacGame.removePlayerDacColor(playerName);
-				dacGame.removePlayerLocation(playerName);
-				dacGame.removePlayerName(playerName);
-				dacGame.removeCurrentPlayerName(playerName);
+				dacGame.removePlayerDacColor(playerUuid);
+				dacGame.removePlayerLocation(playerUuid);
+				dacGame.removePlayerUuid(playerUuid);
+				dacGame.removeCurrentPlayerUuid(playerUuid);
 				continue;
 			}
 			playersInGame.add(playerInLoop);
@@ -142,8 +143,8 @@ public class StartCommand extends Subcommand {
 		}
 
 		dacGame.randomizePlayerOrder();
-		ArrayList<String> currentPlayers = new ArrayList<>(dacGame.getPlayerNames());
-		dacGame.setCurrentPlayerNames(currentPlayers);
+		ArrayList<UUID> currentPlayers = new ArrayList<>(dacGame.getPlayerUuids());
+		dacGame.setCurrentPlayerUuids(currentPlayers);
 		dacGame.setStarted(true);
 
 		dac.reloadConfig();

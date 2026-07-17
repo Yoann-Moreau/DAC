@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 
 public class GamePhaseListeners implements Listener {
@@ -30,22 +31,22 @@ public class GamePhaseListeners implements Listener {
 	@EventHandler
 	public void onDacGameTurn(DacGameTurnEvent e) {
 		// Reset list of eliminated players
-		e.getDacGame().setEliminatedPlayerNames(new ArrayList<>());
+		e.getDacGame().setEliminatedPlayerUuids(new ArrayList<>());
 
 		// End game if no players left
-		if (e.getDacGame().getCurrentPlayerNames().isEmpty()) {
+		if (e.getDacGame().getCurrentPlayerUuids().isEmpty()) {
 			return;
 		}
 
-		String currentPlayerName = e.getDacGame().getCurrentPlayerNames().getFirst();
-		Player currentPlayer = Bukkit.getPlayer(currentPlayerName);
+		UUID currentPlayerUuid = e.getDacGame().getCurrentPlayerUuids().getFirst();
+		Player currentPlayer = Bukkit.getPlayer(currentPlayerUuid);
 		if (currentPlayer == null) {
 			return;
 		}
 
 		DacGame dacGame = e.getDacGame();
 		DAC dac = dacGame.getDac();
-		ArrayList<Player> players = dacGame.getPlayers(dacGame.getPlayerNames());
+		ArrayList<Player> players = dacGame.getPlayers(dacGame.getPlayerUuids());
 
 		if (e.isPoolFilled()) {
 			if (!dacGame.isSuddenDeath()) {
@@ -76,72 +77,71 @@ public class GamePhaseListeners implements Listener {
 			dacGame.setSuddenDeathDacLocation(PoolManagement.getRandomBlockInPool(poolRegion));
 		}
 
-		if (dacGame.getCurrentPlayerNames().size() == 1 && dacGame.getPlayerNames().size() > 1) {
-			String winnerName = dacGame.getCurrentPlayerNames().getFirst();
+		if (dacGame.getCurrentPlayerUuids().size() == 1 && dacGame.getPlayerUuids().size() > 1) {
+			UUID winnerUuid = dacGame.getCurrentPlayerUuids().getFirst();
+			Player winner = Bukkit.getPlayer(winnerUuid);
+			if (winner == null) {
+				return;
+			}
+			String winnerName = winner.getName();
 			MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.gameOver");
 			HashMap<String, String> placeholders = new HashMap<>();
 			placeholders.put("\\{player-name}", winnerName);
-			placeholders.put("\\{player-color}", dacGame.getPlayerDacColors().get(winnerName).name().toLowerCase());
+			placeholders.put("\\{player-color}", dacGame.getPlayerDacColors().get(winnerUuid).name().toLowerCase());
 			MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.winner", placeholders);
 			dacGame.setStarted(false);
 			dacGame.setPlayerDacColors(null);
 			dacGame.setPlayerLocations(null);
-			dacGame.setPlayerNames(null);
-			dacGame.setCurrentPlayerNames(null);
+			dacGame.setPlayerUuids(null);
+			dacGame.setCurrentPlayerUuids(null);
 			dacGame.getDac().removeGame(dacGame.getName());
 			return;
 		}
 
 		MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.newDacTurn");
 		Bukkit.getPluginManager().callEvent(
-				new PlayerTurnEvent(dacGame, dacGame.getCurrentPlayerNames().getFirst())
+				new PlayerTurnEvent(dacGame, dacGame.getCurrentPlayerUuids().getFirst())
 		);
 	}
 
 
 	@EventHandler
 	public void onPlayerTurn(PlayerTurnEvent e) {
-		e.getDacGame().setJumpOver(false);
+		DacGame dacGame = e.getDacGame();
+		dacGame.setJumpOver(false);
 
 		Player player = e.getPlayer();
 		if (player == null) {
 			return;
 		}
 
-		if (e.getDacGame().isSuddenDeath()) {
+		if (dacGame.isSuddenDeath()) {
 			String message = PoolManagement.dacPattern(
-					e.getDacGame().getDac(),
-					e.getDacGame().getName(),
-					e.getDacGame().getSuddenDeathDacLocation().x(),
-					e.getDacGame().getSuddenDeathDacLocation().z()
+					dacGame.getDac(),
+					dacGame.getName(),
+					dacGame.getSuddenDeathDacLocation().x(),
+					dacGame.getSuddenDeathDacLocation().z()
 			);
 			if (message != null) {
 				player.sendRichMessage(message);
 			}
 		}
 
-		e.getDacGame().setCurrentPlayerName(e.getPlayer().getName());
+		dacGame.setCurrentPlayerUuid(e.getPlayer().getUniqueId());
 
 		HashMap<String, String> placeholders = new HashMap<>();
 		placeholders.put("\\{player-name}", player.getName());
-		placeholders.put("\\{player-color}", e.getDacGame().getPlayerDacColors().get(player.getName()).name().toLowerCase());
+		placeholders.put("\\{player-color}", dacGame.getPlayerDacColors().get(player.getUniqueId()).name().toLowerCase());
 
-		ArrayList<Player> players = new ArrayList<>();
-		for (String playerName : e.getDacGame().getPlayerNames()) {
-			Player playerInLoop = Bukkit.getPlayer(playerName);
-			if (playerInLoop == null || playerInLoop.equals(player)) {
-				continue;
-			}
-			players.add(playerInLoop);
-		}
+		ArrayList<Player> players = dacGame.getAllPlayersButOne(dacGame.getPlayerUuids(), player.getUniqueId());
 		MessageManagement.messageToPlayers(
-				e.getDacGame().getDac(),
+				dacGame.getDac(),
 				players,
 				"messages.gamePhases.playerTurn",
 				placeholders
 		);
 
-		MessageManagement.messageToPlayer(e.getDacGame().getDac(), player, "messages.gamePhases.yourTurn");
-		e.getPlayer().teleport(e.getDacGame().getDivingLocation());
+		MessageManagement.messageToPlayer(dacGame.getDac(), player, "messages.gamePhases.yourTurn");
+		e.getPlayer().teleport(dacGame.getDivingLocation());
 	}
 }

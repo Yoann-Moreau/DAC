@@ -165,9 +165,9 @@ public class JoinCommand extends Subcommand {
 			return true;
 		}
 
-		dacGame.addPlayerDacColor(player.getName(), dacColor);
-		dacGame.addPlayerLocation(player.getName(), player.getLocation());
-		dacGame.addPlayerName(player.getName());
+		dacGame.addPlayerDacColor(player.getUniqueId(), dacColor);
+		dacGame.addPlayerLocation(player.getUniqueId(), player.getLocation());
+		dacGame.addPlayerUuid(player.getUniqueId());
 
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {

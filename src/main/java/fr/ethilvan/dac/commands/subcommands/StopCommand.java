@@ -187,8 +187,8 @@ public class StopCommand extends Subcommand {
 		dacGame.setStarted(false);
 		dacGame.setPlayerDacColors(null);
 		dacGame.setPlayerLocations(null);
-		dacGame.setPlayerNames(null);
-		dacGame.setCurrentPlayerNames(null);
+		dacGame.setPlayerUuids(null);
+		dacGame.setCurrentPlayerUuids(null);
 		dac.removeGame(dacName);
 
 		return true;

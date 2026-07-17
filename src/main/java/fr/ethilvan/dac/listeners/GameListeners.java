@@ -22,6 +22,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 
 public class GameListeners implements Listener {
@@ -38,7 +39,7 @@ public class GameListeners implements Listener {
 	public void onPlayerMove(PlayerMoveEvent e) {
 
 		Player player = e.getPlayer();
-		String playerName = player.getName();
+		UUID playerUuid = player.getUniqueId();
 
 		for (String dacName : this.dac.getGames().keySet()) {
 			ConfigurationSection config = this.dac.getConfig().getConfigurationSection("regions." + dacName);
@@ -53,11 +54,11 @@ public class GameListeners implements Listener {
 			}
 			DacGame dacGame = this.dac.getGames().get(dacName);
 
-			if (dacGame.getCurrentPlayerName() == null) {
+			if (dacGame.getCurrentPlayerUuid() == null) {
 				continue;
 			}
 
-			if (!dacGame.getCurrentPlayerName().equals(playerName)) {
+			if (!dacGame.getCurrentPlayerUuid().equals(playerUuid)) {
 				continue;
 			}
 
@@ -77,22 +78,22 @@ public class GameListeners implements Listener {
 				int x = blockVector3.x();
 				int z = blockVector3.z();
 
-				ArrayList<Player> players = dacGame.getPlayers(dacGame.getPlayerNames());
+				ArrayList<Player> players = dacGame.getPlayers(dacGame.getPlayerUuids());
 
-				int currentPlayerIndex = dacGame.getCurrentPlayerNames().indexOf(playerName);
+				int currentPlayerIndex = dacGame.getCurrentPlayerUuids().indexOf(playerUuid);
 				int nextIndex = currentPlayerIndex + 1;
 
 				// Launch next dac turn
-				if (nextIndex >= dacGame.getCurrentPlayerNames().size()) {
+				if (nextIndex >= dacGame.getCurrentPlayerUuids().size()) {
 
 					// Remove eliminated players
-					for (String eliminatedPlayerName : dacGame.getEliminatedPlayerNames()) {
-						dacGame.removeCurrentPlayerName(eliminatedPlayerName);
+					for (UUID eliminatedPlayerUuid : dacGame.getEliminatedPlayerUuids()) {
+						dacGame.removeCurrentPlayerUuid(eliminatedPlayerUuid);
 					}
 
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
 						this.placePoolPillar(dacGame, region, player, x, z);
-						player.teleport(dacGame.getPlayerLocations().get(player.getName()));
+						player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
 						boolean poolFilled = PoolManagement.isPoolFilled(player.getWorld(), region);
 						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, poolFilled));
 					}, 10L);
@@ -100,19 +101,19 @@ public class GameListeners implements Listener {
 				}
 
 				// Launch next player's turn
-				String nextPlayerName = dacGame.getCurrentPlayerNames().get(nextIndex);
+				UUID nextPlayerUuid = dacGame.getCurrentPlayerUuids().get(nextIndex);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
 					this.placePoolPillar(dacGame, region, player, x, z);
-					player.teleport(dacGame.getPlayerLocations().get(player.getName()));
+					player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
 					boolean poolFilled = PoolManagement.isPoolFilled(player.getWorld(), region);
 					if (poolFilled && !dacGame.isSuddenDeath()) {
 						dacGame.setSuddenDeathDacLocation(PoolManagement.getRandomBlockInPool(region));
 						MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.suddenDeath");
 						dacGame.setSuddenDeath(true);
-						Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
+						Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerUuid));
 						return;
 					}
-					Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
+					Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerUuid));
 				}, 10L);
 			}
 		}
@@ -132,11 +133,11 @@ public class GameListeners implements Listener {
 					player.getWorld().getBlockAt(x, y, z).setType(Material.GLASS);
 				}
 				else {
-					player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerDacColors().get(player.getName()).getMaterial());
+					player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerDacColors().get(player.getUniqueId()).getMaterial());
 				}
 			}
 			else {
-				player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerDacColors().get(player.getName()).getMaterial());
+				player.getWorld().getBlockAt(x, y, z).setType(dacGame.getPlayerDacColors().get(player.getUniqueId()).getMaterial());
 			}
 		}
 	}
@@ -155,75 +156,75 @@ public class GameListeners implements Listener {
 		for (String dacName : this.dac.getGames().keySet()) {
 			DacGame dacGame = this.dac.getGames().get(dacName);
 
-			String currentPlayerName = dacGame.getCurrentPlayerName();
-			if (currentPlayerName == null) {
+			UUID currentPlayerUuid = dacGame.getCurrentPlayerUuid();
+			if (currentPlayerUuid == null) {
 				continue;
 			}
 
-			if (!player.getName().equals(currentPlayerName)) {
+			if (!player.getUniqueId().equals(currentPlayerUuid)) {
 				continue;
 			}
 
 			e.setCancelled(true);
 			dacGame.setJumpOver(true);
-			dacGame.addEliminatedPlayerName(currentPlayerName);
+			dacGame.addEliminatedPlayerUuid(currentPlayerUuid);
 
 			player.sendMessage(Component.text("You have been eliminated.", NamedTextColor.RED));
 			dacGame.messageAllButOnePlayer(player,
 					Component.text(player.getName() + " has been eliminated.", NamedTextColor.WHITE)
 			);
 
-			int currentPlayerIndex = dacGame.getCurrentPlayerNames().indexOf(currentPlayerName);
+			int currentPlayerIndex = dacGame.getCurrentPlayerUuids().indexOf(currentPlayerUuid);
 			int nextIndex = currentPlayerIndex + 1;
 
-			if (nextIndex >= dacGame.getCurrentPlayerNames().size()) {
+			if (nextIndex >= dacGame.getCurrentPlayerUuids().size()) {
 
-				if (dacGame.getPlayerNames().size() == 1) {
-					dacGame.setEliminatedPlayerNames(new ArrayList<>());
+				if (dacGame.getPlayerUuids().size() == 1) {
+					dacGame.setEliminatedPlayerUuids(new ArrayList<>());
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-						player.teleport(dacGame.getPlayerLocations().get(player.getName()));
+						player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
 						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
 					}, 10L);
 					return;
 				}
 
-				ArrayList<String> currentPlayerNames = dacGame.getCurrentPlayerNames();
-				ArrayList<String> eliminatedPlayerNames = dacGame.getEliminatedPlayerNames();
+				ArrayList<UUID> currentPlayerUuids = dacGame.getCurrentPlayerUuids();
+				ArrayList<UUID> eliminatedPlayerUuids = dacGame.getEliminatedPlayerUuids();
 
-				if (currentPlayerNames.size() == eliminatedPlayerNames.size() && currentPlayerNames.size() > 1) {
+				if (currentPlayerUuids.size() == eliminatedPlayerUuids.size() && currentPlayerUuids.size() > 1) {
 
 					MessageManagement.messageToPlayers(
 							dac,
-							dacGame.getPlayers(dacGame.getPlayerNames()),
+							dacGame.getPlayers(dacGame.getPlayerUuids()),
 							"messages.gamePhases.tryAgain"
 					);
 
 					// Launch next turn with every eliminated players
-					dacGame.setEliminatedPlayerNames(new ArrayList<>());
+					dacGame.setEliminatedPlayerUuids(new ArrayList<>());
 					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-						player.teleport(dacGame.getPlayerLocations().get(player.getName()));
+						player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
 						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
 					}, 10L);
 					return;
 				}
 
 				// Remove eliminated players
-				for (String playerName : dacGame.getEliminatedPlayerNames()) {
-					dacGame.removeCurrentPlayerName(playerName);
+				for (UUID playerUuid : dacGame.getEliminatedPlayerUuids()) {
+					dacGame.removeCurrentPlayerUuid(playerUuid);
 				}
 
 				// Launch next turn without eliminated players
 				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-					player.teleport(dacGame.getPlayerLocations().get(player.getName()));
+					player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
 					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
 				}, 10L);
 				return;
 			}
 
 			Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-				player.teleport(dacGame.getPlayerLocations().get(player.getName()));
-				String nextPlayerName = dacGame.getCurrentPlayerNames().get(nextIndex);
-				Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerName));
+				player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
+				UUID nextPlayerUuid = dacGame.getCurrentPlayerUuids().get(nextIndex);
+				Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerUuid));
 			}, 10L);
 		}
 	}

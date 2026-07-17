@@ -7,6 +7,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
+
 public class PlayerTurnEvent extends Event {
 
 	private static final HandlerList handlers = new HandlerList();
@@ -16,9 +19,9 @@ public class PlayerTurnEvent extends Event {
 	private final Player player;
 
 
-	public PlayerTurnEvent(DacGame dacGame, String playerName) {
+	public PlayerTurnEvent(DacGame dacGame, UUID playerUuid) {
 		this.dacGame = dacGame;
-		this.player = Bukkit.getPlayer(playerName);
+		this.player = Bukkit.getPlayer(playerUuid);
 	}
 
 	@Override

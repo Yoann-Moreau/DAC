@@ -8,10 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
+
 
 public class DacGame {
 
@@ -19,13 +17,13 @@ public class DacGame {
 
 	private final String name;
 
-	private HashMap<String, DacColor> playerDacColors;
-	private HashMap<String, Location> playerLocations;
-	private ArrayList<String> playerNames;
-	private ArrayList<String> currentPlayerNames;
-	private ArrayList<String> eliminatedPlayerNames;
+	private HashMap<UUID, DacColor> playerDacColors;
+	private HashMap<UUID, Location> playerLocations;
+	private ArrayList<UUID> playerUuids;
+	private ArrayList<UUID> currentPlayerUuids;
+	private ArrayList<UUID> eliminatedPlayerUuids;
 
-	private String currentPlayerName;
+	private UUID currentPlayerUuid;
 
 	private boolean started;
 
@@ -43,9 +41,9 @@ public class DacGame {
 		this.name = dacName;
 		this.playerDacColors = new HashMap<>();
 		this.playerLocations = new HashMap<>();
-		this.playerNames = new ArrayList<>();
-		this.currentPlayerNames = new ArrayList<>();
-		this.eliminatedPlayerNames = new ArrayList<>();
+		this.playerUuids = new ArrayList<>();
+		this.currentPlayerUuids = new ArrayList<>();
+		this.eliminatedPlayerUuids = new ArrayList<>();
 		this.started = false;
 		this.jumpOver = false;
 		this.suddenDeath = false;
@@ -61,111 +59,111 @@ public class DacGame {
 	}
 
 
-	public HashMap<String, DacColor> getPlayerDacColors() {
+	public HashMap<UUID, DacColor> getPlayerDacColors() {
 		return this.playerDacColors;
 	}
 
-	public void setPlayerDacColors(HashMap<String, DacColor> playerDacColors) {
+	public void setPlayerDacColors(HashMap<UUID, DacColor> playerDacColors) {
 		this.playerDacColors = playerDacColors;
 	}
 
-	public void addPlayerDacColor(String playerName, DacColor dacColor) {
-		if (!this.playerDacColors.containsKey(playerName)) {
-			this.playerDacColors.put(playerName, dacColor);
+	public void addPlayerDacColor(UUID playerUuid, DacColor dacColor) {
+		if (!this.playerDacColors.containsKey(playerUuid)) {
+			this.playerDacColors.put(playerUuid, dacColor);
 		}
 	}
 
-	public void removePlayerDacColor(String playerName) {
-		this.playerDacColors.remove(playerName);
+	public void removePlayerDacColor(UUID playerUuid) {
+		this.playerDacColors.remove(playerUuid);
 	}
 
 
-	public HashMap<String, Location> getPlayerLocations() {
+	public HashMap<UUID, Location> getPlayerLocations() {
 		return this.playerLocations;
 	}
 
-	public void setPlayerLocations(HashMap<String, Location> playerLocations) {
+	public void setPlayerLocations(HashMap<UUID, Location> playerLocations) {
 		this.playerLocations = playerLocations;
 	}
 
-	public void addPlayerLocation(String playerName, Location location) {
-		if (!this.playerLocations.containsKey(playerName)) {
-			this.playerLocations.put(playerName, location);
+	public void addPlayerLocation(UUID playerUuid, Location location) {
+		if (!this.playerLocations.containsKey(playerUuid)) {
+			this.playerLocations.put(playerUuid, location);
 		}
 	}
 
-	public void removePlayerLocation(String playerName) {
-		this.playerLocations.remove(playerName);
+	public void removePlayerLocation(UUID playerUuid) {
+		this.playerLocations.remove(playerUuid);
 	}
 
 
-	public ArrayList<String> getPlayerNames() {
-		return this.playerNames;
+	public ArrayList<UUID> getPlayerUuids() {
+		return this.playerUuids;
 	}
 
-	public void setPlayerNames(ArrayList<String> playerNames) {
-		this.playerNames = playerNames;
+	public void setPlayerUuids(ArrayList<UUID> playerUuids) {
+		this.playerUuids = playerUuids;
 	}
 
-	public void addPlayerName(String playerName) {
-		if (!this.playerNames.contains(playerName)) {
-			this.playerNames.add(playerName);
+	public void addPlayerUuid(UUID playerUuid) {
+		if (!this.playerUuids.contains(playerUuid)) {
+			this.playerUuids.add(playerUuid);
 		}
 	}
 
-	public void removePlayerName(String playerName) {
-		this.playerNames.remove(playerName);
+	public void removePlayerUuid(UUID playerUuid) {
+		this.playerUuids.remove(playerUuid);
 	}
 
 	public void randomizePlayerOrder() {
-		Collections.shuffle(this.playerNames, new Random());
+		Collections.shuffle(this.playerUuids, new Random());
 	}
 
 
-	public ArrayList<String> getCurrentPlayerNames() {
-		return currentPlayerNames;
+	public ArrayList<UUID> getCurrentPlayerUuids() {
+		return currentPlayerUuids;
 	}
 
-	public void setCurrentPlayerNames(ArrayList<String> currentPlayerNames) {
-		this.currentPlayerNames = currentPlayerNames;
+	public void setCurrentPlayerUuids(ArrayList<UUID> currentPlayerUuids) {
+		this.currentPlayerUuids = currentPlayerUuids;
 	}
 
-	public void addCurrentPlayerName(String playerName) {
-		if (!this.currentPlayerNames.contains(playerName)) {
-			this.currentPlayerNames.add(playerName);
+	public void addCurrentPlayerUuid(UUID playerUuid) {
+		if (!this.currentPlayerUuids.contains(playerUuid)) {
+			this.currentPlayerUuids.add(playerUuid);
 		}
 	}
 
-	public void removeCurrentPlayerName(String playerName) {
-		this.currentPlayerNames.remove(playerName);
+	public void removeCurrentPlayerUuid(UUID playerUuid) {
+		this.currentPlayerUuids.remove(playerUuid);
 	}
 
 
-	public String getCurrentPlayerName() {
-		return this.currentPlayerName;
+	public UUID getCurrentPlayerUuid() {
+		return this.currentPlayerUuid;
 	}
 
-	public void setCurrentPlayerName(String currentPlayerName) {
-		this.currentPlayerName = currentPlayerName;
+	public void setCurrentPlayerUuid(UUID currentPlayerUuid) {
+		this.currentPlayerUuid = currentPlayerUuid;
 	}
 
 
-	public ArrayList<String> getEliminatedPlayerNames() {
-		return this.eliminatedPlayerNames;
+	public ArrayList<UUID> getEliminatedPlayerUuids() {
+		return this.eliminatedPlayerUuids;
 	}
 
-	public void setEliminatedPlayerNames(ArrayList<String> eliminatedPlayerNames) {
-		this.eliminatedPlayerNames = eliminatedPlayerNames;
+	public void setEliminatedPlayerUuids(ArrayList<UUID> eliminatedPlayerUuids) {
+		this.eliminatedPlayerUuids = eliminatedPlayerUuids;
 	}
 
-	public void addEliminatedPlayerName(String playerName) {
-		if (!this.eliminatedPlayerNames.contains(playerName)) {
-			this.eliminatedPlayerNames.add(playerName);
+	public void addEliminatedPlayerUuid(UUID playerUuid) {
+		if (!this.eliminatedPlayerUuids.contains(playerUuid)) {
+			this.eliminatedPlayerUuids.add(playerUuid);
 		}
 	}
 
-	public void removeEliminatedPlayerName(String playerName) {
-		this.eliminatedPlayerNames.remove(playerName);
+	public void removeEliminatedPlayerUuid(UUID playerUuid) {
+		this.eliminatedPlayerUuids.remove(playerUuid);
 	}
 
 
@@ -215,11 +213,11 @@ public class DacGame {
 
 
 	public void  messageAllButOnePlayer(Player player, TextComponent text) {
-		for (String playerName : this.getPlayerNames()) {
-			if (player.getName().equals(playerName)) {
+		for (UUID playerUuid : this.getPlayerUuids()) {
+			if (player.getUniqueId().equals(playerUuid)) {
 				continue;
 			}
-			Player playerInLoop = Bukkit.getPlayer(playerName);
+			Player playerInLoop = Bukkit.getPlayer(playerUuid);
 			if (playerInLoop == null) {
 				continue;
 			}
@@ -228,32 +226,33 @@ public class DacGame {
 	}
 
 
-	public ArrayList<Player> getPlayers(ArrayList<String> playerNames) {
+	public ArrayList<Player> getPlayers(ArrayList<UUID> playerUuids) {
 		ArrayList<Player> players = new ArrayList<>();
 
-		for (String currentPlayerName : playerNames) {
-			Player currentPlayer = Bukkit.getPlayer(currentPlayerName);
+		for (UUID currentPlayerUuid : playerUuids) {
+			Player currentPlayer = Bukkit.getPlayer(currentPlayerUuid);
 			if (currentPlayer == null) {
 				continue;
 			}
-			players.add(Bukkit.getPlayer(currentPlayerName));
+			players.add(Bukkit.getPlayer(currentPlayerUuid));
 		}
 
 		return players;
 	}
 
-	public ArrayList<Player> getAllPlayersButOne(ArrayList<String> playerNames, String playerName) {
+
+	public ArrayList<Player> getAllPlayersButOne(ArrayList<UUID> playerUuids, UUID playerUuid) {
 		ArrayList<Player> players = new ArrayList<>();
 
-		for (String currentPlayerName : playerNames) {
-			if (currentPlayerName.equals(playerName)) {
+		for (UUID currentPlayerUuid : playerUuids) {
+			if (currentPlayerUuid.equals(playerUuid)) {
 				continue;
 			}
-			Player currentPlayer = Bukkit.getPlayer(currentPlayerName);
+			Player currentPlayer = Bukkit.getPlayer(currentPlayerUuid);
 			if (currentPlayer == null) {
 				continue;
 			}
-			players.add(Bukkit.getPlayer(currentPlayerName));
+			players.add(Bukkit.getPlayer(currentPlayerUuid));
 		}
 
 		return players;
