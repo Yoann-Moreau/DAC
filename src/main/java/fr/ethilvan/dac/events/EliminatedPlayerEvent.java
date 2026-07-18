@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 
-public class EliminatePlayerEvent extends Event {
+public class EliminatedPlayerEvent extends Event {
 
 	private static final HandlerList handlers = new HandlerList();
 
@@ -20,7 +20,7 @@ public class EliminatePlayerEvent extends Event {
 	private final EliminationCause cause;
 
 
-	public EliminatePlayerEvent(DacGame dacGame, UUID playerUuid, EliminationCause cause) {
+	public EliminatedPlayerEvent(DacGame dacGame, UUID playerUuid, EliminationCause cause) {
 		this.dacGame = dacGame;
 		this.playerUuid = playerUuid;
 		this.cause = cause;

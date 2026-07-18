@@ -5,7 +5,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.events.DacGameTurnEvent;
-import fr.ethilvan.dac.events.EliminatePlayerEvent;
+import fr.ethilvan.dac.events.EliminatedPlayerEvent;
 import fr.ethilvan.dac.events.PlayerTurnEvent;
 import fr.ethilvan.dac.game.DacGame;
 import fr.ethilvan.dac.game.EliminationCause;
@@ -13,7 +13,6 @@ import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.PoolManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -171,7 +170,7 @@ public class GameListeners implements Listener {
 			dacGame.setJumpOver(true);
 
 			Bukkit.getPluginManager().callEvent(
-					new EliminatePlayerEvent(dacGame, currentPlayerUuid, EliminationCause.FALL_DAMAGE)
+					new EliminatedPlayerEvent(dacGame, currentPlayerUuid, EliminationCause.FALL_DAMAGE)
 			);
 		}
 	}

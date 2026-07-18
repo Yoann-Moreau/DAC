@@ -102,7 +102,7 @@ public class GamePhaseListeners implements Listener {
 		if (player == null || !player.isOnline()) {
 			// Eliminate disconnected player
 			Bukkit.getPluginManager().callEvent(
-					new EliminatePlayerEvent(dacGame, playerUuid, EliminationCause.DISCONNECTION)
+					new EliminatedPlayerEvent(dacGame, playerUuid, EliminationCause.DISCONNECTION)
 			);
 			return;
 		}
@@ -139,7 +139,7 @@ public class GamePhaseListeners implements Listener {
 
 
 	@EventHandler
-	public void onPlayerEliminated(EliminatePlayerEvent e) {
+	public void onPlayerEliminated(EliminatedPlayerEvent e) {
 		DacGame dacGame = e.getDacGame();
 		DAC dac = dacGame.getDac();
 		UUID playerUuid = e.getPlayerUuid();
@@ -176,7 +176,7 @@ public class GamePhaseListeners implements Listener {
 					placeholders
 			);
 
-			if (player == null) {
+			if (player == null || !player.isOnline()) {
 				return;
 			}
 		}
@@ -186,7 +186,7 @@ public class GamePhaseListeners implements Listener {
 
 		if (nextIndex >= dacGame.getCurrentPlayerUuids().size()) {
 
-			if (onlyOnePlayer) {
+			if (onlyOnePlayer && cause == EliminationCause.FALL_DAMAGE) {
 				// Call next DAC turn (only one player)
 				dacGame.setEliminatedPlayerUuids(new ArrayList<>());
 				Bukkit.getScheduler().scheduleSyncDelayedTask(dac, () -> {
@@ -210,17 +210,7 @@ public class GamePhaseListeners implements Listener {
 
 				// Launch next turn with every eliminated players
 				dacGame.setEliminatedPlayerUuids(new ArrayList<>());
-				if (cause == EliminationCause.FALL_DAMAGE) {
-					Bukkit.getScheduler().scheduleSyncDelayedTask(dac, () -> {
-						player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
-						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
-					}, 10L);
-					return;
-				}
-				else if (cause == EliminationCause.DISCONNECTION) {
-					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
-					return;
-				}
+				if (returnWhenCallingNextGameTurn(dacGame, cause, player)) return;
 			}
 
 			// Remove eliminated players
@@ -229,17 +219,7 @@ public class GamePhaseListeners implements Listener {
 			}
 
 			// Launch next turn without eliminated players
-			if (cause == EliminationCause.FALL_DAMAGE) {
-				Bukkit.getScheduler().scheduleSyncDelayedTask(dac, () -> {
-					player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
-					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
-				}, 10L);
-				return;
-			}
-			else if (cause == EliminationCause.DISCONNECTION) {
-				Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
-				return;
-			}
+			if (returnWhenCallingNextGameTurn(dacGame, cause, player)) return;
 		}
 
 		UUID nextPlayerUuid = dacGame.getCurrentPlayerUuids().get(nextIndex);
@@ -275,5 +255,25 @@ public class GamePhaseListeners implements Listener {
 		placeholders.put("\\{player-color}", dacGame.getPlayerDacColors().get(winnerUuid).name().toLowerCase());
 		MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.winner", placeholders);
 		dacGame.endGame();
+	}
+
+
+	private boolean returnWhenCallingNextGameTurn(
+			DacGame dacGame,
+			EliminationCause cause,
+			Player player
+	) {
+		if (cause == EliminationCause.FALL_DAMAGE) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(dacGame.getDac(), () -> {
+				player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
+				Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
+			}, 10L);
+			return true;
+		}
+		else if (cause == EliminationCause.DISCONNECTION) {
+			Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
+			return true;
+		}
+		return false;
 	}
 }
