@@ -2,10 +2,9 @@ package fr.ethilvan.dac.listeners;
 
 import com.sk89q.worldedit.regions.Region;
 import fr.ethilvan.dac.DAC;
-import fr.ethilvan.dac.events.DacGameTurnEvent;
-import fr.ethilvan.dac.events.GameStartEvent;
-import fr.ethilvan.dac.events.PlayerTurnEvent;
+import fr.ethilvan.dac.events.*;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.game.EliminationCause;
 import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.PoolManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
@@ -78,23 +77,7 @@ public class GamePhaseListeners implements Listener {
 		}
 
 		if (dacGame.getCurrentPlayerUuids().size() == 1 && dacGame.getPlayerUuids().size() > 1) {
-			UUID winnerUuid = dacGame.getCurrentPlayerUuids().getFirst();
-			Player winner = Bukkit.getPlayer(winnerUuid);
-			if (winner == null) {
-				return;
-			}
-			String winnerName = winner.getName();
-			MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.gameOver");
-			HashMap<String, String> placeholders = new HashMap<>();
-			placeholders.put("\\{player-name}", winnerName);
-			placeholders.put("\\{player-color}", dacGame.getPlayerDacColors().get(winnerUuid).name().toLowerCase());
-			MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.winner", placeholders);
-			dacGame.setStarted(false);
-			dacGame.setPlayerDacColors(null);
-			dacGame.setPlayerLocations(null);
-			dacGame.setPlayerUuids(null);
-			dacGame.setCurrentPlayerUuids(null);
-			dacGame.getDac().removeGame(dacGame.getName());
+			Bukkit.getPluginManager().callEvent(new GameEndEvent(dacGame));
 			return;
 		}
 
@@ -110,8 +93,17 @@ public class GamePhaseListeners implements Listener {
 		DacGame dacGame = e.getDacGame();
 		dacGame.setJumpOver(false);
 
-		Player player = e.getPlayer();
-		if (player == null) {
+		UUID playerUuid = e.getPlayerUuid();
+		if (playerUuid == null) {
+			return;
+		}
+
+		Player player = Bukkit.getPlayer(playerUuid);
+		if (player == null || !player.isOnline()) {
+			// Eliminate disconnected player
+			Bukkit.getPluginManager().callEvent(
+					new EliminatePlayerEvent(dacGame, playerUuid, EliminationCause.DISCONNECTION)
+			);
 			return;
 		}
 
@@ -127,13 +119,13 @@ public class GamePhaseListeners implements Listener {
 			}
 		}
 
-		dacGame.setCurrentPlayerUuid(e.getPlayer().getUniqueId());
+		dacGame.setCurrentPlayerUuid(e.getPlayerUuid());
 
 		HashMap<String, String> placeholders = new HashMap<>();
 		placeholders.put("\\{player-name}", player.getName());
-		placeholders.put("\\{player-color}", dacGame.getPlayerDacColors().get(player.getUniqueId()).name().toLowerCase());
+		placeholders.put("\\{player-color}", dacGame.getPlayerDacColors().get(playerUuid).name().toLowerCase());
 
-		ArrayList<Player> players = dacGame.getAllPlayersButOne(dacGame.getPlayerUuids(), player.getUniqueId());
+		ArrayList<Player> players = dacGame.getAllPlayersButOne(dacGame.getPlayerUuids(), playerUuid);
 		MessageManagement.messageToPlayers(
 				dacGame.getDac(),
 				players,
@@ -142,6 +134,146 @@ public class GamePhaseListeners implements Listener {
 		);
 
 		MessageManagement.messageToPlayer(dacGame.getDac(), player, "messages.gamePhases.yourTurn");
-		e.getPlayer().teleport(dacGame.getDivingLocation());
+		player.teleport(dacGame.getDivingLocation());
+	}
+
+
+	@EventHandler
+	public void onPlayerEliminated(EliminatePlayerEvent e) {
+		DacGame dacGame = e.getDacGame();
+		DAC dac = dacGame.getDac();
+		UUID playerUuid = e.getPlayerUuid();
+		EliminationCause cause = e.getCause();
+		Player player = Bukkit.getPlayer(playerUuid);
+
+		boolean onlyOnePlayer = dacGame.getPlayerUuids().size() == 1;
+
+		dacGame.addEliminatedPlayerUuid(playerUuid);
+
+		ArrayList<Player> playersToNotify = dacGame.getAllPlayersButOne(dacGame.getPlayerUuids(), playerUuid);
+		HashMap<String, String> placeholders = new HashMap<>();
+		placeholders.put("\\{player-name}", Bukkit.getOfflinePlayer(playerUuid).getName());
+		placeholders.put("\\{player-color}", dacGame.getPlayerDacColors().get(playerUuid).name().toLowerCase());
+
+		if (cause == EliminationCause.DISCONNECTION) {
+			MessageManagement.messageToPlayers(
+					dacGame.getDac(),
+					playersToNotify,
+					"messages.gamePhases.dcedPlayerEliminated",
+					placeholders
+			);
+			if (onlyOnePlayer) {
+				dacGame.endGame();
+				return;
+			}
+		}
+		else if (cause == EliminationCause.FALL_DAMAGE) {
+			MessageManagement.messageToPlayer(dac, player, "messages.gamePhases.youAreEliminated");
+			MessageManagement.messageToPlayers(
+					dacGame.getDac(),
+					playersToNotify,
+					"messages.gamePhases.fallenPlayerEliminated",
+					placeholders
+			);
+
+			if (player == null) {
+				return;
+			}
+		}
+
+		int currentPlayerIndex = dacGame.getCurrentPlayerUuids().indexOf(playerUuid);
+		int nextIndex = currentPlayerIndex + 1;
+
+		if (nextIndex >= dacGame.getCurrentPlayerUuids().size()) {
+
+			if (onlyOnePlayer) {
+				// Call next DAC turn (only one player)
+				dacGame.setEliminatedPlayerUuids(new ArrayList<>());
+				Bukkit.getScheduler().scheduleSyncDelayedTask(dac, () -> {
+					player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
+					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
+				}, 10L);
+				return;
+			}
+
+			ArrayList<UUID> currentPlayerUuids = dacGame.getCurrentPlayerUuids();
+			ArrayList<UUID> eliminatedPlayerUuids = dacGame.getEliminatedPlayerUuids();
+
+			// Try again if all players eliminated in the same turn
+			if (currentPlayerUuids.size() == eliminatedPlayerUuids.size() && currentPlayerUuids.size() > 1) {
+
+				MessageManagement.messageToPlayers(
+						dac,
+						dacGame.getPlayers(dacGame.getPlayerUuids()),
+						"messages.gamePhases.tryAgain"
+				);
+
+				// Launch next turn with every eliminated players
+				dacGame.setEliminatedPlayerUuids(new ArrayList<>());
+				if (cause == EliminationCause.FALL_DAMAGE) {
+					Bukkit.getScheduler().scheduleSyncDelayedTask(dac, () -> {
+						player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
+						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
+					}, 10L);
+					return;
+				}
+				else if (cause == EliminationCause.DISCONNECTION) {
+					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
+					return;
+				}
+			}
+
+			// Remove eliminated players
+			for (UUID eliminatedPlayerUuid : dacGame.getEliminatedPlayerUuids()) {
+				dacGame.removeCurrentPlayerUuid(eliminatedPlayerUuid);
+			}
+
+			// Launch next turn without eliminated players
+			if (cause == EliminationCause.FALL_DAMAGE) {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(dac, () -> {
+					player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
+					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
+				}, 10L);
+				return;
+			}
+			else if (cause == EliminationCause.DISCONNECTION) {
+				Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
+				return;
+			}
+		}
+
+		UUID nextPlayerUuid = dacGame.getCurrentPlayerUuids().get(nextIndex);
+		if (cause == EliminationCause.FALL_DAMAGE) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(dac, () -> {
+				player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
+				Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerUuid));
+			}, 10L);
+		}
+		else if (cause == EliminationCause.DISCONNECTION) {
+			Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerUuid));
+		}
+	}
+
+
+	@EventHandler
+	public void onGameEnd(GameEndEvent event) {
+		DacGame dacGame = event.getDacGame();
+		DAC dac = dacGame.getDac();
+
+		if (dacGame.getCurrentPlayerUuids().isEmpty()) {
+			dacGame.endGame();
+			return;
+		}
+
+		ArrayList<Player> players = dacGame.getPlayers(dacGame.getPlayerUuids());
+		UUID winnerUuid = dacGame.getCurrentPlayerUuids().getFirst();
+
+		String winnerName = Bukkit.getOfflinePlayer(winnerUuid).getName();
+		MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.gameOver");
+		HashMap<String, String> placeholders = new HashMap<>();
+		placeholders.put("\\{player-name}", winnerName);
+		placeholders.put("\\{player-color}", dacGame.getPlayerDacColors().get(winnerUuid).name().toLowerCase());
+		MessageManagement.messageToPlayers(dac, players, "messages.gamePhases.winner", placeholders);
+		dacGame.endGame();
 	}
 }

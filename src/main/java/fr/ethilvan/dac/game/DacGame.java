@@ -257,4 +257,14 @@ public class DacGame {
 
 		return players;
 	}
+
+
+	public void endGame() {
+		setStarted(false);
+		setPlayerDacColors(null);
+		setPlayerLocations(null);
+		setPlayerUuids(null);
+		setCurrentPlayerUuids(null);
+		getDac().removeGame(getName());
+	}
 }

@@ -1,6 +1,7 @@
 package fr.ethilvan.dac.events;
 
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.game.EliminationCause;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 
-public class PlayerTurnEvent extends Event {
+public class EliminatePlayerEvent extends Event {
 
 	private static final HandlerList handlers = new HandlerList();
 
@@ -16,19 +17,13 @@ public class PlayerTurnEvent extends Event {
 
 	private final UUID playerUuid;
 
+	private final EliminationCause cause;
 
-	public PlayerTurnEvent(DacGame dacGame, UUID playerUuid) {
+
+	public EliminatePlayerEvent(DacGame dacGame, UUID playerUuid, EliminationCause cause) {
 		this.dacGame = dacGame;
 		this.playerUuid = playerUuid;
-	}
-
-	@Override
-	public @NotNull HandlerList getHandlers() {
-		return handlers;
-	}
-
-	public static HandlerList getHandlerList() {
-		return handlers;
+		this.cause = cause;
 	}
 
 
@@ -40,4 +35,20 @@ public class PlayerTurnEvent extends Event {
 	public UUID getPlayerUuid() {
 		return this.playerUuid;
 	}
+
+
+	public EliminationCause getCause() {
+		return this.cause;
+	}
+
+
+	@Override
+	public @NotNull HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
+
 }

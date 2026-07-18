@@ -5,22 +5,23 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
 
-
-public class PlayerTurnEvent extends Event {
+public class GameEndEvent extends Event {
 
 	private static final HandlerList handlers = new HandlerList();
 
 	private final DacGame dacGame;
 
-	private final UUID playerUuid;
 
-
-	public PlayerTurnEvent(DacGame dacGame, UUID playerUuid) {
+	public GameEndEvent(DacGame dacGame) {
 		this.dacGame = dacGame;
-		this.playerUuid = playerUuid;
 	}
+
+
+	public DacGame getDacGame() {
+		return dacGame;
+	}
+
 
 	@Override
 	public @NotNull HandlerList getHandlers() {
@@ -31,13 +32,4 @@ public class PlayerTurnEvent extends Event {
 		return handlers;
 	}
 
-
-	public DacGame getDacGame() {
-		return this.dacGame;
-	}
-
-
-	public UUID getPlayerUuid() {
-		return this.playerUuid;
-	}
 }

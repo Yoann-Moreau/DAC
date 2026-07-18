@@ -5,8 +5,10 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.events.DacGameTurnEvent;
+import fr.ethilvan.dac.events.EliminatePlayerEvent;
 import fr.ethilvan.dac.events.PlayerTurnEvent;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.game.EliminationCause;
 import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.PoolManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
@@ -167,65 +169,10 @@ public class GameListeners implements Listener {
 
 			e.setCancelled(true);
 			dacGame.setJumpOver(true);
-			dacGame.addEliminatedPlayerUuid(currentPlayerUuid);
 
-			player.sendMessage(Component.text("You have been eliminated.", NamedTextColor.RED));
-			dacGame.messageAllButOnePlayer(player,
-					Component.text(player.getName() + " has been eliminated.", NamedTextColor.WHITE)
+			Bukkit.getPluginManager().callEvent(
+					new EliminatePlayerEvent(dacGame, currentPlayerUuid, EliminationCause.FALL_DAMAGE)
 			);
-
-			int currentPlayerIndex = dacGame.getCurrentPlayerUuids().indexOf(currentPlayerUuid);
-			int nextIndex = currentPlayerIndex + 1;
-
-			if (nextIndex >= dacGame.getCurrentPlayerUuids().size()) {
-
-				if (dacGame.getPlayerUuids().size() == 1) {
-					dacGame.setEliminatedPlayerUuids(new ArrayList<>());
-					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-						player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
-						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
-					}, 10L);
-					return;
-				}
-
-				ArrayList<UUID> currentPlayerUuids = dacGame.getCurrentPlayerUuids();
-				ArrayList<UUID> eliminatedPlayerUuids = dacGame.getEliminatedPlayerUuids();
-
-				if (currentPlayerUuids.size() == eliminatedPlayerUuids.size() && currentPlayerUuids.size() > 1) {
-
-					MessageManagement.messageToPlayers(
-							dac,
-							dacGame.getPlayers(dacGame.getPlayerUuids()),
-							"messages.gamePhases.tryAgain"
-					);
-
-					// Launch next turn with every eliminated players
-					dacGame.setEliminatedPlayerUuids(new ArrayList<>());
-					Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-						player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
-						Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
-					}, 10L);
-					return;
-				}
-
-				// Remove eliminated players
-				for (UUID playerUuid : dacGame.getEliminatedPlayerUuids()) {
-					dacGame.removeCurrentPlayerUuid(playerUuid);
-				}
-
-				// Launch next turn without eliminated players
-				Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-					player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
-					Bukkit.getPluginManager().callEvent(new DacGameTurnEvent(dacGame, false));
-				}, 10L);
-				return;
-			}
-
-			Bukkit.getScheduler().scheduleSyncDelayedTask(this.dac, () -> {
-				player.teleport(dacGame.getPlayerLocations().get(player.getUniqueId()));
-				UUID nextPlayerUuid = dacGame.getCurrentPlayerUuids().get(nextIndex);
-				Bukkit.getPluginManager().callEvent(new PlayerTurnEvent(dacGame, nextPlayerUuid));
-			}, 10L);
 		}
 	}
 }
