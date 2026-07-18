@@ -21,6 +21,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -172,6 +173,28 @@ public class GameListeners implements Listener {
 			Bukkit.getPluginManager().callEvent(
 					new EliminatedPlayerEvent(dacGame, currentPlayerUuid, EliminationCause.FALL_DAMAGE)
 			);
+		}
+	}
+
+
+	@EventHandler
+	public void onPlayerDisconnect(PlayerQuitEvent e) {
+		Player disconnectedPlayer = e.getPlayer();
+		UUID disconnectedPlayerUuid = disconnectedPlayer.getUniqueId();
+
+		for (String dacName : this.dac.getGames().keySet()) {
+			DacGame dacGame = this.dac.getGames().get(dacName);
+			if (!dacGame.getPlayerUuids().contains(disconnectedPlayerUuid)) {
+				continue;
+			}
+
+			UUID currentPlayerUuid = dacGame.getCurrentPlayerUuid();
+			if (disconnectedPlayerUuid == currentPlayerUuid) {
+				Bukkit.getPluginManager().callEvent(
+						new EliminatedPlayerEvent(dacGame, disconnectedPlayerUuid, EliminationCause.DISCONNECTION)
+				);
+				return;
+			}
 		}
 	}
 }
