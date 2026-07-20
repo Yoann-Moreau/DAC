@@ -109,11 +109,11 @@ public class StopCommand extends Subcommand {
 		if (!dacGame.isStarted()) {
 			if (player == null) {
 				dac.getLogger().warning(
-						MessageManagement.getMessageFromKey(dac, "messages.commands.errors.noDacGame")
+						MessageManagement.getMessageFromKey(dac, "messages.commands.stop.noGameStarted")
 				);
 				return;
 			}
-			MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.noDacGame");
+			MessageManagement.messageToPlayer(dac, player, "messages.commands.stop.noGameStarted");
 			return;
 		}
 
@@ -198,7 +198,7 @@ public class StopCommand extends Subcommand {
 
 		ArrayList<Player> players = new ArrayList<>();
 		for (UUID playerUuid : dacGame.getPlayerUuids()) {
-			if (playerUuid.equals(player.getUniqueId())) {
+			if (player != null && playerUuid.equals(player.getUniqueId())) {
 				continue;
 			}
 			players.add(Bukkit.getPlayer(playerUuid));
