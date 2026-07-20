@@ -11,6 +11,7 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fr.ethilvan.dac.DAC;
 import fr.ethilvan.dac.commands.Subcommand;
 import fr.ethilvan.dac.game.DacGame;
+import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.PoolManagement;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,7 +21,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
+import java.util.UUID;
+
 
 public class StopCommand extends Subcommand {
 
@@ -36,7 +40,7 @@ public class StopCommand extends Subcommand {
 
 	@Override
 	public String getDescription() {
-		return "Stops the DAC game currently in progress if there is one.";
+		return MessageManagement.getMessageFromKey(dac, "messages.commands.stop.description");
 	}
 
 	@Override
@@ -58,7 +62,9 @@ public class StopCommand extends Subcommand {
 
 		Player player = Bukkit.getPlayer(commandSender.getName());
 		if (player == null && args.length < 2) {
-			dac.getLogger().warning("This command requires a DAC name when not used by a player.");
+			dac.getLogger().warning(
+					MessageManagement.getMessageFromKey(dac, "messages.commands.errors.dacNameNeeded")
+			);
 			return;
 		}
 
@@ -70,10 +76,12 @@ public class StopCommand extends Subcommand {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
 		if (config == null) {
 			if (player == null) {
-				dac.getLogger().warning("There are no defined DAC regions.");
+				dac.getLogger().warning(
+						MessageManagement.getMessageFromKey(dac, "messages.commands.errors.noDefinedRegions")
+				);
 				return;
 			}
-			player.sendMessage(Component.text("There are no defined DAC regions.", NamedTextColor.RED));
+			MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.noDefinedRegions");
 			return;
 		}
 
@@ -82,7 +90,7 @@ public class StopCommand extends Subcommand {
 			return;
 		}
 
-		stopGame(dac,player);
+		stopGame(dac, player);
 	}
 
 
@@ -90,20 +98,22 @@ public class StopCommand extends Subcommand {
 
 		if (!dac.getGames().containsKey(dacName)) {
 			if (player == null) {
-				dac.getLogger().warning("No DAC games exists in this region.");
+				dac.getLogger().warning(MessageManagement.getMessageFromKey(dac, "messages.commands.errors.noDacGame"));
 				return;
 			}
-			player.sendMessage(Component.text("No DAC games exists in this region.", NamedTextColor.RED));
+			MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.noDacGame");
 			return;
 		}
 
 		DacGame dacGame = dac.getGames().get(dacName);
 		if (!dacGame.isStarted()) {
 			if (player == null) {
-				dac.getLogger().warning("No DAC game has been started in this region.");
+				dac.getLogger().warning(
+						MessageManagement.getMessageFromKey(dac, "messages.commands.errors.noDacGame")
+				);
 				return;
 			}
-			player.sendMessage(Component.text("No DAC game has been started in this region.", NamedTextColor.RED));
+			MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.noDacGame");
 			return;
 		}
 
@@ -112,11 +122,14 @@ public class StopCommand extends Subcommand {
 			return;
 		}
 		if (player == null) {
-			dac.getLogger().info("The game in the " + dacName + " region has been stopped.");
+			dac.getLogger().info(
+					MessageManagement.getMessageFromKey(dac, "messages.commands.stop.success")
+			);
 			return;
 		}
-		player.sendMessage(Component.text("The game in the " + dacName + " region has been stopped.",
-				NamedTextColor.GREEN));
+		HashMap<String, String> placeholders = new HashMap<>();
+		placeholders.put("\\{dac-name}", dacName);
+		MessageManagement.messageToPlayer(dac, player, "messages.commands.stop.success", placeholders);
 	}
 
 
@@ -124,7 +137,7 @@ public class StopCommand extends Subcommand {
 
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions");
 		if (config == null) {
-			player.sendMessage(Component.text("There are no defined DAC regions.", NamedTextColor.RED));
+			MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.noDefinedRegions");
 			return;
 		}
 
@@ -135,7 +148,7 @@ public class StopCommand extends Subcommand {
 		RegionManager regionsManager = container.get(wgWorld);
 
 		if (regionsManager == null) {
-			player.sendMessage(Component.text("Error when retrieving world regions.", NamedTextColor.RED));
+			MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.worldRegionsRetrieve");
 			return;
 		}
 
@@ -155,7 +168,7 @@ public class StopCommand extends Subcommand {
 				if (item.equals(region)) {
 
 					if (!dac.getGames().containsKey(dacName)) {
-						player.sendMessage(Component.text("No DAC games exists in this region.", NamedTextColor.RED));
+						MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.noDacGame");
 						return;
 					}
 
@@ -163,14 +176,15 @@ public class StopCommand extends Subcommand {
 					if (!this.resetAndStopGame(dac, dacGame, dacName, player)) {
 						return;
 					}
-					player.sendMessage(Component.text("The game in the " + dacName + " region has been stopped.",
-							NamedTextColor.GREEN));
+					HashMap<String, String> placeholders = new HashMap<>();
+					placeholders.put("\\{dac-name}", dacName);
+					MessageManagement.messageToPlayer(dac, player, "messages.commands.stop.success", placeholders);
 					return;
 				}
 			}
 		}
 
-		player.sendMessage(Component.text("You are not in a DAC region.", NamedTextColor.RED));
+		MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.notInRegion");
 	}
 
 
@@ -182,7 +196,16 @@ public class StopCommand extends Subcommand {
 			return false;
 		}
 
-		dacGame.messageAllButOnePlayer(player, Component.text("The DAC game has been stopped", NamedTextColor.RED));
+		ArrayList<Player> players = new ArrayList<>();
+		for (UUID playerUuid : dacGame.getPlayerUuids()) {
+			if (playerUuid.equals(player.getUniqueId())) {
+				continue;
+			}
+			players.add(Bukkit.getPlayer(playerUuid));
+		}
+		HashMap<String, String> placeholders = new HashMap<>();
+		placeholders.put("\\{dac-name}", dacName);
+		MessageManagement.messageToPlayers(dac, players, "messages.commands.stop.success", placeholders);
 
 		dacGame.setStarted(false);
 		dacGame.setPlayerDacColors(null);

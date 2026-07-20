@@ -122,7 +122,7 @@ public class JoinCommand extends Subcommand {
 						return;
 					}
 					HashMap<String, String> placeholders = new HashMap<>();
-					placeholders.put("\\{dac-name\\}", dacName);
+					placeholders.put("\\{dac-name}", dacName);
 					MessageManagement.messageToSender(dac, player, "messages.commands.join.success", placeholders);
 					return;
 				}
@@ -172,7 +172,7 @@ public class JoinCommand extends Subcommand {
 		ConfigurationSection config = dac.getConfig().getConfigurationSection("regions." + dacName);
 		if (config == null) {
 			HashMap<String, String> placeholders = new HashMap<>();
-			placeholders.put("\\{dac-name\\}", dacName);
+			placeholders.put("\\{dac-name}", dacName);
 			MessageManagement.messageToSender(dac, player, "messages.commands.join.noRegions", placeholders);
 			return true;
 		}

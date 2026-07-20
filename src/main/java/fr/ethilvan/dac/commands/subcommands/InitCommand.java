@@ -114,7 +114,7 @@ public class InitCommand extends Subcommand {
 		dac.addGame(dacName, new DacGame(dac, dacName));
 		ArrayList<Player> playersInRegion = RegionManagement.getPlayersInWGRegion(sender.getWorld(), region);
 		HashMap<String, String> placeholders = new HashMap<>();
-		placeholders.put("\\{dac-name\\}", dacName);
+		placeholders.put("\\{dac-name}", dacName);
 		MessageManagement.commandMessageToPlayers(
 				dac,
 				sender,

@@ -12,7 +12,6 @@ import fr.ethilvan.dac.game.EliminationCause;
 import fr.ethilvan.dac.tools.MessageManagement;
 import fr.ethilvan.dac.tools.PoolManagement;
 import fr.ethilvan.dac.tools.RegionManagement;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -46,12 +45,12 @@ public class GameListeners implements Listener {
 		for (String dacName : this.dac.getGames().keySet()) {
 			ConfigurationSection config = this.dac.getConfig().getConfigurationSection("regions." + dacName);
 			if (config == null) {
-				player.sendMessage(Component.text("Error while retrieving DAC regions."));
+				MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.dacRegionsRetrieve");
 				return;
 			}
 			String poolRegionName = config.getString("pool");
 			if (poolRegionName == null) {
-				player.sendMessage(Component.text("Error while retrieving pool region name."));
+				MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.poolNameRetrieve");
 				return;
 			}
 			DacGame dacGame = this.dac.getGames().get(dacName);
@@ -67,7 +66,7 @@ public class GameListeners implements Listener {
 			Region region = RegionManagement.getExistingRegion(player, poolRegionName);
 
 			if (region == null) {
-				dac.getLogger().severe("Error when retrieving pool region.");
+				MessageManagement.messageToPlayer(dac, player, "messages.commands.errors.poolRetrieve");
 				return;
 			}
 

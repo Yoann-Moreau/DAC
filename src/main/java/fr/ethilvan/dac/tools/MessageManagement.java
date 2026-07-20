@@ -80,6 +80,21 @@ public class MessageManagement {
 	}
 
 
+	public static void messageToPlayer(
+			DAC dac,
+			Player player,
+			String messageKey,
+			HashMap<String, String> placeholders
+	) {
+		String message = getMessageFromKey(dac, player, messageKey);
+		if (message == null) {
+			return;
+		}
+		message = replacePlaceholders(message, placeholders);
+		player.sendRichMessage(message);
+	}
+
+
 	public static void messageToPlayers(DAC dac, ArrayList<Player> players, String messageKey) {
 		String message = getMessageFromKey(dac, messageKey);
 		if (message == null) {

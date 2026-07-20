@@ -212,20 +212,6 @@ public class DacGame {
 	}
 
 
-	public void  messageAllButOnePlayer(Player player, TextComponent text) {
-		for (UUID playerUuid : this.getPlayerUuids()) {
-			if (player.getUniqueId().equals(playerUuid)) {
-				continue;
-			}
-			Player playerInLoop = Bukkit.getPlayer(playerUuid);
-			if (playerInLoop == null) {
-				continue;
-			}
-			playerInLoop.sendMessage(text);
-		}
-	}
-
-
 	public ArrayList<Player> getPlayers(ArrayList<UUID> playerUuids) {
 		ArrayList<Player> players = new ArrayList<>();
 

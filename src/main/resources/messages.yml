@@ -15,6 +15,7 @@ messages:
       noRegions: "<red>No regions are defined for the <gold>{dac-name}</gold> DAC."
       noBaseRegion: "<red>The base region for the <gold>{dac-name}</gold> DAC does not exist."
       noWorldGuardRegion: "<red>No WorldGuard region found for this base region."
+      dacNameNeeded: "<red>This command requires a DAC name when not used by a player."
     init:
       description: "Initializes a DAC game. Use before /dac join."
       newGameCreated: "<green>A DAC game has been created in the <gold>{dac-name}</gold> region."
@@ -34,6 +35,10 @@ messages:
       alreadyStarted: "<red>A DAC game has already been started in this region."
       noPlayers: "<red>No players have joined this DAC game."
       started: "<gold>The DAC game has started."
+    stop:
+      description: "Stops the DAC game currently in progress if there is one."
+      success: "<gray>The game in the <gold>{dac-name}</gold> region has been stopped."
+      noGameStarted: "<red>No DAC game has been started in this region."
   gamePhases:
     newDacTurn: "<gray>A new DAC turn has begun!"
     yourTurn: "<gold>It's your turn."
